@@ -20,8 +20,11 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 [hidden] { display: none !important; }
-html { background: var(--bg); }
+/* Seite immer mindestens bildschirmhoch: Bei kurzen Seiten setzt iOS in der Home-Bildschirm-App
+   fest unten verankerte Elemente sonst um die Höhe der Statusleiste zu hoch (die Tab-Leiste schwebt) */
+html { background: var(--bg); min-height: 100lvh; }
 body {
+  min-height: 100lvh;
   margin: 0;
   background: var(--bg);
   color: var(--text);
