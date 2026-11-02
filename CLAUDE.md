@@ -5,7 +5,7 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
 
 ## Stand (02.11.2026)
 
-- **Version 0.3**, nur lokal. Noch kein Git-Repo, noch nicht auf GitHub Pages.
+- **Version 0.3.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
 - 0.2: Gerichte gehören zur **Woche**, ein Tag ist optional (Matthes' Wunsch: „Diese Woche koche ich das und das“).
   Daten: `weeks[montag] = [{ id, dishId, servings, day|null }]`; 0.1-Daten (`plan[datum]`) werden beim Laden umgestellt.
 - 0.3: **Rezept aus Foto-Text** (Gerichte → Einfügen). Text per iPhone-Livetext kopieren, einfügen, `js/import.js`
@@ -29,6 +29,9 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
   Cache-Namen mit `kochplan-`. Der Service Worker löscht nur eigene Caches.
 - **Nach jeder Änderung** `VERSION` in `koch-app/sw.js` hochzählen, sichtbare Änderungen zusätzlich `APP_VERSION` in `js/app.js`.
 - Der Service Worker registriert sich nur über https (GitHub Pages), lokal nicht.
+- **Deploy:** Claude committet (lokale Git-Identität ist die anonyme GitHub-Noreply-Adresse, nie die Firmenadresse).
+  Pushen macht Matthes selbst über GitHub Desktop („Push origin“). GitHub Pages (Branch `main`, Ordner root)
+  veröffentlicht unter https://vb4fdvgf5v-lgtm.github.io/kochplan/koch-app/. Repo ist öffentlich: keine persönlichen Daten committen.
 - **Icons:** Material Symbols, in `index.html` nur die verwendeten per `icon_names=` (alphabetisch).
 - Gleiche Stolpersteine wie beim Putzplan: `render()` baut per `innerHTML` neu (Fokus und Scrollposition werden
   gerettet), iOS-Eingabefelder mindestens 16 px, Formular-Fenster oben verankert.
