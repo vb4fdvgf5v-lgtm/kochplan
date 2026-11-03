@@ -33,6 +33,9 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
   Pushen macht Matthes selbst über GitHub Desktop („Push origin“). GitHub Pages (Branch `main`, Ordner root)
   veröffentlicht unter https://vb4fdvgf5v-lgtm.github.io/kochplan/koch-app/. Repo ist öffentlich: keine persönlichen Daten committen.
 - **Icons:** Material Symbols, in `index.html` nur die verwendeten per `icon_names=` (alphabetisch).
+- **`min-height: 100lvh` auf `html` und `body` nicht entfernen.** Sonst schwebt die Tab-Leiste in der
+  Home-Bildschirm-App auf kurzen Seiten etwa um die Statusleistenhöhe zu hoch (iOS, `black-translucent`).
+  In der Vorschau am Mac ist das nicht sichtbar, nur auf dem iPhone (in 0.3.2 so behoben, von Matthes bestätigt).
 - Gleiche Stolpersteine wie beim Putzplan: `render()` baut per `innerHTML` neu (Fokus und Scrollposition werden
   gerettet), iOS-Eingabefelder mindestens 16 px, Formular-Fenster oben verankert.
 
