@@ -5,7 +5,7 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
 
 ## Stand (09.11.2026)
 
-- **Version 0.3.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
+- **Version 0.4.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
 - 0.2: Gerichte gehören zur **Woche**, ein Tag ist optional (Matthes' Wunsch: „Diese Woche koche ich das und das“).
   Daten: `weeks[montag] = [{ id, dishId, servings, day|null }]`; 0.1-Daten (`plan[datum]`) werden beim Laden umgestellt.
 - 0.3: **Rezept aus Foto-Text** (Gerichte → Einfügen). Text per iPhone-Livetext kopieren, einfügen, `js/import.js`
