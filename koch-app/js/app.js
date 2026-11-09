@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.4';
+const APP_VERSION = '0.5';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -21,7 +21,7 @@ const ui = {
   view: NAV.some(([v]) => v === params.get('view')) ? params.get('view') : 'week',
   week: mondayOf(today()),
   sheet: null, // { type: 'entry' | 'pick' | 'dish' | 'edit' | 'paste' | 'pantry', ... }
-  dishSearch: '', pickSearch: '', pickFast: false, findFast: false,
+  dishSearch: '', dishSort: 'name', pickSearch: '', pickFast: false, findFast: false,
   pasteText: '', // Rezepttext zum Erkennen
   have: [], // Resteküche: was noch da ist
   toast: null, focus: null,
@@ -292,7 +292,8 @@ function viewDishes() {
   const list = data.dishes
     .filter(d => !q || keyOf(d.name).includes(q) || d.tags?.some(t => keyOf(t).includes(q))
       || d.ingredients.some(i => keyOf(i.name).includes(q)))
-    .sort((a, b) => a.name.localeCompare(b.name, 'de'));
+    .sort((a, b) => (ui.dishSort === 'name' ? 0 : (b.rating?.[ui.dishSort] ?? 0) - (a.rating?.[ui.dishSort] ?? 0))
+      || a.name.localeCompare(b.name, 'de'));
   const header = `<header class="top"><h1>Gerichte</h1>
     <span class="top-actions">
       <button class="btn small" data-action="paste-open">${icon('content_paste')}Einfügen</button>
@@ -319,14 +320,18 @@ function viewDishes() {
   return `${header}
     <label class="search">${icon('search')}<input id="dish-search" type="search" data-bind="dishSearch" value="${esc(ui.dishSearch)}"
       placeholder="Gericht, Zutat oder Schlagwort" autocomplete="off"></label>
+    <div class="chips sort">${[['name', 'A–Z'], ['taste', 'Am leckersten'], ['ease', 'Am einfachsten']].map(([k, label]) =>
+      `<button class="chip ${ui.dishSort === k ? 'on' : ''}" data-action="sort" data-sort="${k}">${label}</button>`).join('')}</div>
     <div class="list">${list.map(dishRow).join('') || '<p class="muted center pad">Nichts gefunden.</p>'}</div>
     ${more}`;
 }
 
 function dishRow(d) {
-  const meta = [d.minutes && `${d.minutes} Min.`, plural(d.ingredients.length, 'Zutat', 'Zutaten'), ago(cookedAgo(d))];
+  const meta = [d.minutes && `${d.minutes} Min.`, ago(cookedAgo(d))];
+  const rated = ratingText(d);
   return `<button class="card-row" data-action="dish" data-id="${d.id}">
     <span class="card-text"><b>${esc(d.name)}</b><small>${esc(meta.filter(Boolean).join(' · '))}</small>
+      ${rated.length ? `<small class="rated">${icon('star')}${rated.join(' · ')}</small>` : ''}
       ${d.tags?.length ? `<span class="tags">${d.tags.map(t => `<i>${esc(t)}</i>`).join('')}</span>` : ''}</span>
     ${icon('chevron_right')}
   </button>`;
@@ -370,7 +375,7 @@ function viewFind() {
 
 function viewSheet() {
   const s = ui.sheet;
-  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry }[s.type]();
+  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate }[s.type]();
   return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
@@ -474,6 +479,8 @@ function sheetDish() {
     body: `<p class="meta muted">${meta.filter(Boolean).join('<span class="sep"></span>')}</p>
       ${dish.tags?.length ? `<p class="tags">${dish.tags.map(x => `<i>${esc(x)}</i>`).join('')}</p>` : ''}
       ${cookedBlock(dish.cooked?.includes(today()) ? today() : null)}
+      <h4>Bewertung</h4>
+      ${ratingRows(dish)}
       <h4>Zutaten</h4>
       ${dish.ingredients.length ? ingredientList(dish) : '<p class="muted">Noch keine Zutaten eingetragen.</p>'}
       ${dish.notes ? `<h4>Notizen</h4><p class="notes">${linkify(dish.notes)}</p>` : ''}
@@ -485,6 +492,37 @@ function sheetDish() {
       <div class="btn-row">
         <button class="btn" data-action="edit-dish">${icon('edit')}Bearbeiten</button>
         <button class="btn ghost danger" data-action="delete-dish">${icon('delete')}Löschen</button>
+      </div>`,
+  };
+}
+
+// Bewertung: dish.rating = { taste: 1–5, ease: 1–5 }
+const RATING = {
+  taste: { label: 'Geschmack', short: 'Lecker', words: ['Noch nicht bewertet', 'Geht so', 'Okay', 'Gut', 'Sehr gut', 'Lieblingsgericht'] },
+  ease: { label: 'Einfachheit', short: 'Einfach', words: ['Noch nicht bewertet', 'Sehr aufwendig', 'Aufwendig', 'Mittel', 'Einfach', 'Ganz einfach'] },
+};
+const isRated = dish => !!(dish.rating?.taste && dish.rating?.ease);
+function ratingRows(dish) {
+  return Object.entries(RATING).map(([kind, r]) => {
+    const value = dish.rating?.[kind] ?? 0;
+    return `<div class="rate-row">
+      <span class="rate-label"><b>${r.label}</b><small>${r.words[value]}</small></span>
+      <span class="stars">${[1, 2, 3, 4, 5].map(n => `<button class="${n <= value ? 'on' : 'off'}" data-action="rate" data-kind="${kind}" data-value="${n}"
+        aria-label="${r.label} ${n} von 5">${icon('star')}</button>`).join('')}</span>
+    </div>`;
+  }).join('');
+}
+const ratingText = dish => Object.entries(RATING).filter(([k]) => dish.rating?.[k]).map(([k, r]) => `${r.short} ${dish.rating[k]}/5`);
+
+function sheetRate() {
+  const dish = dishById(ui.sheet.id);
+  return {
+    title: 'Wie war’s?',
+    body: `<p class="muted">Du hast <b>${esc(dish.name)}</b> zum ersten Mal gekocht. Wie hat es geschmeckt, und wie einfach ging es?</p>
+      ${ratingRows(dish)}
+      <div class="btn-row">
+        <button class="btn primary" data-action="close" ${isRated(dish) ? '' : 'disabled'}>${icon('check')}Fertig</button>
+        <button class="btn ghost" data-action="close">Später</button>
       </div>`,
   };
 }
@@ -684,8 +722,16 @@ const actions = {
     dish.cooked = [...(dish.cooked ?? []), t];
     if (entry) entry.cooked = t;
     toast('Als gekocht gespeichert');
+    // Noch nicht bewertet: gleich fragen, wie es war
+    if (!isRated(dish)) openSheet({ type: 'rate', id: dish.id });
     commit();
   },
+  rate: el => {
+    const dish = dishById(ui.sheet.id);
+    dish.rating = { ...dish.rating, [el.dataset.kind]: Number(el.dataset.value) };
+    commit();
+  },
+  sort: el => { ui.dishSort = el.dataset.sort; render(); },
   uncook: () => {
     const entry = ui.sheet.type === 'entry' ? entryById(ui.sheet.week, ui.sheet.id)
       : weekEntries(mondayOf(today())).find(e => e.dishId === ui.sheet.id && e.cooked === today());

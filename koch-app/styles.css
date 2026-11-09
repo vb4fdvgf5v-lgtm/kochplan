@@ -180,7 +180,7 @@ h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacin
 .cooked-tag .ms { font-size: 15px; }
 .cooked-note { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px;
   background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); font-weight: 600; margin: 4px 0 8px; }
-.cooked-note span { flex: 1; text-align: left; }
+.cooked-note > span:not(.ms) { flex: 1; }
 .day.empty { background: transparent; border: 1.5px dashed var(--line); }
 .day.empty.today { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
 .open-day {
@@ -344,3 +344,16 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
   8%, 85% { opacity: 1; transform: translate(-50%, 0); }
   100% { opacity: 0; }
 }
+
+/* Bewertung */
+.rate-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; }
+.rate-label { display: grid; }
+.rate-label small { color: var(--muted); font-size: 13px; }
+.stars { display: flex; }
+.stars button { background: none; border: 0; padding: 4px; color: var(--accent); cursor: pointer; }
+.stars button .ms { font-size: 30px; }
+.stars button.off { color: var(--line); }
+.chips.sort { margin: 0 0 12px; }
+.rated { color: var(--accent) !important; display: inline-flex; align-items: center; gap: 3px; }
+.rated .ms { font-size: 14px; }
+.btn:disabled { opacity: .4; }
