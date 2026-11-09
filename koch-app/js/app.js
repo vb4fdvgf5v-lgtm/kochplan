@@ -63,6 +63,7 @@ function save() {
 
 const uid = () => (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`);
 const dishById = id => data.dishes.find(d => d.id === id);
+const cookedAgo = dish => lastCooked(data.weeks, dish.id, today(), dish.cooked);
 const weekEntries = week => (data.weeks[week] ?? []).filter(e => dishById(e.dishId));
 const entryById = (week, id) => data.weeks[week]?.find(e => e.id === id);
 const inWeek = (week, dishId) => weekEntries(week).some(e => e.dishId === dishId);
@@ -101,6 +102,9 @@ const icon = name => `<span class="ms" aria-hidden="true">${name}</span>`;
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 const weekday = s => WD[(fromIso(s).getDay() + 6) % 7];
 const fmtShort = s => `${weekday(s)} ${fromIso(s).getDate()}.`;
+// „Heute gekocht“, „Gestern gekocht“, sonst „Gekocht am Mo 9.11.“
+const cookedText = s => s === today() ? 'Heute gekocht' : s === addDays(today(), -1) ? 'Gestern gekocht'
+  : `Gekocht am ${weekday(s)} ${fromIso(s).getDate()}.${fromIso(s).getMonth() + 1}.`;
 const ago = days => days == null ? 'noch nie gekocht' : days === 0 ? 'zuletzt heute'
   : days === 1 ? 'zuletzt gestern' : `zuletzt vor ${days} Tagen`;
 const linkify = text => esc(text).replace(/https?:\/\/[^\s<]+/g, url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`);
@@ -192,7 +196,9 @@ function viewWeek() {
     lead = `<p class="hint">${icon('lightbulb')}<span>Was möchtest du diese Woche kochen? Füg Gerichte hinzu, die Einkaufsliste entsteht dann von selbst. Einen Tag festlegen kannst du, musst du aber nicht.</span></p>`;
   }
   // Gerichte mit festem Tag nach Tag sortiert, die offenen danach in der Reihenfolge des Hinzufügens
-  const sorted = [...entries].sort((a, b) => (a.day ?? '9') < (b.day ?? '9') ? -1 : (a.day ?? '9') > (b.day ?? '9') ? 1 : 0);
+  // Schon Gekochtes rutscht nach unten
+  const sorted = [...entries].sort((a, b) => !!a.cooked - !!b.cooked
+    || ((a.day ?? '9') < (b.day ?? '9') ? -1 : (a.day ?? '9') > (b.day ?? '9') ? 1 : 0));
   return `<header class="top"><h1>Essensplan</h1></header>
     ${weekNav()}
     ${lead}
@@ -204,7 +210,8 @@ function entryCard(entry) {
   const t = today();
   const dish = dishById(entry.dishId);
   const meta = [dish.minutes && `${dish.minutes} Min.`, plural(entry.servings, 'Portion', 'Portionen')].filter(Boolean);
-  const cls = ['day', entry.day === t && 'today', entry.day && entry.day < t && 'past'].filter(Boolean).join(' ');
+  const cls = ['day', entry.day === t && 'today', entry.day && entry.day < t && 'past', entry.cooked && 'cooked'].filter(Boolean).join(' ');
+  if (entry.cooked) meta.unshift(`<em class="cooked-tag">${icon('check_circle')}${cookedText(entry.cooked)}</em>`);
   return `<button class="${cls}" data-action="entry" data-id="${entry.id}">
     <span class="day-date">${entry.day
       ? `<small>${entry.day === t ? 'Heute' : weekday(entry.day)}</small><b class="num">${fromIso(entry.day).getDate()}</b>`
@@ -317,7 +324,7 @@ function viewDishes() {
 }
 
 function dishRow(d) {
-  const meta = [d.minutes && `${d.minutes} Min.`, plural(d.ingredients.length, 'Zutat', 'Zutaten'), ago(lastCooked(data.weeks, d.id, today()))];
+  const meta = [d.minutes && `${d.minutes} Min.`, plural(d.ingredients.length, 'Zutat', 'Zutaten'), ago(cookedAgo(d))];
   return `<button class="card-row" data-action="dish" data-id="${d.id}">
     <span class="card-text"><b>${esc(d.name)}</b><small>${esc(meta.filter(Boolean).join(' · '))}</small>
       ${d.tags?.length ? `<span class="tags">${d.tags.map(t => `<i>${esc(t)}</i>`).join('')}</span>` : ''}</span>
@@ -340,7 +347,7 @@ function viewFind() {
   } else {
     out = `<div class="list">${results.map(r => `<button class="card-row match" data-action="dish" data-id="${r.dish.id}">
       <span class="card-text"><b>${esc(r.dish.name)}</b>
-        <small>${r.dish.minutes ? `${r.dish.minutes} Min. · ` : ''}${esc(ago(lastCooked(data.weeks, r.dish.id, today())))}</small>
+        <small>${r.dish.minutes ? `${r.dish.minutes} Min. · ` : ''}${esc(ago(cookedAgo(r.dish)))}</small>
         <small class="hits">${icon('check')}${esc(r.hits.join(', '))}</small>
         <small class="${r.missing.length ? 'miss' : 'hits'}">${r.missing.length ? `Fehlt: ${esc(r.missing.join(', '))}` : 'Sonst alles da (außer Vorrat)'}</small>
       </span>${icon('chevron_right')}
@@ -390,6 +397,7 @@ function sheetEntry() {
   return {
     title: dish.name,
     body: `${dish.minutes ? `<p class="muted">${icon('schedule')} ${dish.minutes} Minuten</p>` : ''}
+      ${cookedBlock(entry.cooked)}
       <h4>Tag (optional)</h4>
       <div class="chips">
         <button class="chip ${entry.day ? '' : 'on'}" data-action="entry-day" data-day="">Irgendwann</button>
@@ -420,7 +428,7 @@ function sheetPick() {
     .filter(d => !ui.pickFast || (d.minutes ?? 0) <= FAST)
     .map(d => {
       const shared = sharedWith(d, chosen.filter(o => o.id !== d.id), data.staples);
-      const days = lastCooked(data.weeks, d.id, today());
+      const days = cookedAgo(d);
       // Oben: teilt Zutaten mit dem schon Gewählten, lange nicht gekocht
       const score = shared.length * 3 + (days == null ? 2 : Math.min(days, 28) / 7);
       return { d, shared, days, score, on: chosen.some(c => c.id === d.id) };
@@ -460,11 +468,12 @@ function sheetDish() {
   const current = mondayOf(today());
   const weeks = [[current, 'Diese Woche'], [addDays(current, 7), 'Nächste Woche']];
   const meta = [dish.minutes && `${icon('schedule')} ${dish.minutes} Min.`, `${icon('group')} ${plural(dish.servings, 'Portion', 'Portionen')}`,
-    esc(ago(lastCooked(data.weeks, dish.id, today())))];
+    esc(ago(cookedAgo(dish)))];
   return {
     title: dish.name,
     body: `<p class="meta muted">${meta.filter(Boolean).join('<span class="sep"></span>')}</p>
       ${dish.tags?.length ? `<p class="tags">${dish.tags.map(x => `<i>${esc(x)}</i>`).join('')}</p>` : ''}
+      ${cookedBlock(dish.cooked?.includes(today()) ? today() : null)}
       <h4>Zutaten</h4>
       ${dish.ingredients.length ? ingredientList(dish) : '<p class="muted">Noch keine Zutaten eingetragen.</p>'}
       ${dish.notes ? `<h4>Notizen</h4><p class="notes">${linkify(dish.notes)}</p>` : ''}
@@ -478,6 +487,13 @@ function sheetDish() {
         <button class="btn ghost danger" data-action="delete-dish">${icon('delete')}Löschen</button>
       </div>`,
   };
+}
+
+// Großer Knopf „Gerade gekocht“, danach die Bestätigung mit Rückgängig
+function cookedBlock(cookedOn) {
+  if (!cookedOn) return `<button class="btn primary wide" data-action="cooked">${icon('check_circle')}Gerade gekocht</button>`;
+  return `<div class="cooked-note">${icon('check_circle')}<span>${cookedText(cookedOn)}</span>
+    <button class="btn small ghost" data-action="uncook">Rückgängig</button></div>`;
 }
 
 const blankIngredient = () => ({ amount: '', unit: 'g', name: '' });
@@ -659,6 +675,27 @@ const actions = {
   // Woche
   pick: () => { ui.pickSearch = ''; openSheet({ type: 'pick', week: ui.week }); render(); },
   'pick-toggle': el => { toggleInWeek(ui.sheet.week, dishById(el.dataset.id)); commit(); },
+  cooked: () => {
+    const t = today();
+    // Aus dem Plan: diesen Eintrag. Aus den Gerichten: den noch offenen Eintrag dieser Woche, falls es einen gibt.
+    const entry = ui.sheet.type === 'entry' ? entryById(ui.sheet.week, ui.sheet.id)
+      : weekEntries(mondayOf(t)).find(e => e.dishId === ui.sheet.id && !e.cooked);
+    const dish = dishById(entry?.dishId ?? ui.sheet.id);
+    dish.cooked = [...(dish.cooked ?? []), t];
+    if (entry) entry.cooked = t;
+    toast('Als gekocht gespeichert');
+    commit();
+  },
+  uncook: () => {
+    const entry = ui.sheet.type === 'entry' ? entryById(ui.sheet.week, ui.sheet.id)
+      : weekEntries(mondayOf(today())).find(e => e.dishId === ui.sheet.id && e.cooked === today());
+    const dish = dishById(entry?.dishId ?? ui.sheet.id);
+    const date = entry?.cooked ?? today();
+    const at = (dish.cooked ?? []).lastIndexOf(date);
+    if (at >= 0) dish.cooked.splice(at, 1);
+    if (entry) delete entry.cooked;
+    commit();
+  },
   entry: el => { openSheet({ type: 'entry', week: ui.week, id: el.dataset.id }); render(); },
   'entry-day': el => { entryById(ui.sheet.week, ui.sheet.id).day = el.dataset.day || null; commit(); },
   servings: el => {

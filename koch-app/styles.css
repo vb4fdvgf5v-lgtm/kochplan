@@ -175,6 +175,12 @@ h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacin
 .day.today { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
 .day.today .day-date small, .day.today .day-date b { color: var(--accent); }
 .day.past { opacity: .5; }
+.day.cooked { opacity: .6; }
+.cooked-tag { font-style: normal; color: var(--accent); display: inline-flex; align-items: center; gap: 2px; }
+.cooked-tag .ms { font-size: 15px; }
+.cooked-note { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); font-weight: 600; margin: 4px 0 8px; }
+.cooked-note span { flex: 1; text-align: left; }
 .day.empty { background: transparent; border: 1.5px dashed var(--line); }
 .day.empty.today { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
 .open-day {

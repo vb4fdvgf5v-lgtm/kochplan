@@ -133,13 +133,15 @@ export function isoWeek(s) {
 }
 
 // Vor wie vielen Tagen das Gericht zuletzt dran war (bis heute), sonst null.
-// weeks: { montag: [{ dishId, day }] }. Ohne festen Tag zählt der Sonntag der Woche, also erst nach der Woche.
-export function lastCooked(weeks, dishId, today) {
+// weeks: { montag: [{ dishId, day, cooked }] }. Als gekocht markiert zählt dieses Datum, sonst der feste Tag,
+// ohne festen Tag der Sonntag der Woche. history: Tage, an denen das Gericht als gekocht markiert wurde.
+export function lastCooked(weeks, dishId, today, history = []) {
   let last = null;
+  const consider = date => { if (date && date <= today && (!last || date > last)) last = date; };
   for (const [monday, entries] of Object.entries(weeks)) for (const e of entries ?? []) {
-    const date = e.day ?? addDays(monday, 6);
-    if (e.dishId === dishId && date <= today && (!last || date > last)) last = date;
+    if (e.dishId === dishId) consider(e.cooked ?? e.day ?? addDays(monday, 6));
   }
+  history.forEach(consider);
   return last ? daysBetween(last, today) : null;
 }
 

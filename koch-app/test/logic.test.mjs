@@ -84,3 +84,9 @@ test('Rezeptdatei fügt hinzu und überspringt gleichnamige Gerichte', async () 
   assert.deepEqual(r.dishes.map(d => d.id), ['a', 'b', 'neu-1']);
   assert.equal(incoming[1].id, 'y'); // Eingabe bleibt unverändert
 });
+
+test('Als gekocht markiert zählt das Kochdatum', () => {
+  const weeks = { '2026-11-02': [{ dishId: 'c', day: null, cooked: '2026-11-03' }] };
+  assert.equal(lastCooked(weeks, 'c', '2026-11-05'), 2); // nicht erst Sonntag
+  assert.equal(lastCooked({}, 'd', '2026-11-05', ['2026-10-30', '2026-11-04']), 1); // ohne Plan, nur Verlauf
+});
