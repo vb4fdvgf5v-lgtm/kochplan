@@ -1,0 +1,1015 @@
+{
+  "kind": "kochplan-rezepte",
+  "dishes": [
+    {
+      "id": "gp-1",
+      "name": "Hähnchen-Gemüse-Pfanne mit Reis",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich"
+      ],
+      "notes": "1. Reis nach Packungsangabe kochen.\n2. Hähnchen in Streifen schneiden, Gemüse würfeln.\n3. Hähnchen in Öl 4–5 Minuten scharf anbraten, herausnehmen.\n4. Zwiebel, Knoblauch, Paprika und Zucchini 5 Minuten braten.\n5. Hähnchen zurückgeben, mit Sojasoße, Salz und Pfeffer abschmecken, mit Reis servieren.\nPro Portion ca. 520 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Hähnchenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Reis",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zucchini",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-2",
+      "name": "Ofenlachs mit Brokkoli und Kartoffeln",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Fisch"
+      ],
+      "notes": "1. Ofen auf 200 °C Umluft vorheizen.\n2. Kartoffeln vierteln, mit 1 EL Olivenöl, Salz und Pfeffer aufs Blech, 10 Minuten backen.\n3. Brokkoli in Röschen teilen und dazulegen, Lachs obenauf, mit Zitronensaft, Knoblauch und restlichem Öl beträufeln.\n4. Weitere 12–15 Minuten backen, bis der Lachs gerade gar ist.\nPro Portion ca. 540 kcal · 36 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Lachsfilet",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Kartoffeln",
+          "amount": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Brokkoli",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zitrone",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-3",
+      "name": "Linsen-Bolognese mit Vollkornspaghetti",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch",
+        "Pasta"
+      ],
+      "notes": "1. Zwiebel, Möhre und Knoblauch fein würfeln und in Olivenöl 3 Minuten anschwitzen.\n2. Tomatenmark kurz mitrösten, Linsen, Tomaten und 200 ml Wasser dazugeben, 15 Minuten köcheln.\n3. Währenddessen Spaghetti kochen.\n4. Soße mit Oregano, Salz und Pfeffer abschmecken, mit Parmesan servieren.\nPro Portion ca. 560 kcal · 32 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Vollkornspaghetti",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Rote Linsen",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Gehackte Tomaten",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Möhre",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Tomatenmark",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Parmesan",
+          "amount": 30,
+          "unit": "g"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Oregano",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-4",
+      "name": "Shakshuka mit Feta",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch"
+      ],
+      "notes": "1. Zwiebel, Paprika und Knoblauch würfeln und in Olivenöl 5 Minuten braten.\n2. Gewürze und Tomaten dazugeben, 8 Minuten einköcheln lassen.\n3. Vier Mulden formen, Eier hineinschlagen, Deckel drauf, 6–8 Minuten stocken lassen.\n4. Feta darüberbröseln, mit Vollkornbrot servieren.\nPro Portion ca. 380 kcal · 26 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Eier",
+          "amount": 4,
+          "unit": "Stück"
+        },
+        {
+          "name": "Gehackte Tomaten",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Feta",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Kreuzkümmel",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Vollkornbrot",
+          "amount": 2,
+          "unit": "Scheibe"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-5",
+      "name": "Puten-Wraps mit Joghurt-Dip",
+      "minutes": 20,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell"
+      ],
+      "notes": "1. Pute in Streifen schneiden, mit Paprikapulver, Salz und Pfeffer würzen und in Öl 5–6 Minuten braten.\n2. Joghurt mit gepresstem Knoblauch, etwas geriebener Gurke, Salz und Pfeffer verrühren.\n3. Restliche Gurke, Tomaten und Salat schneiden.\n4. Wraps kurz in der Pfanne erwärmen, mit Dip, Salat und Pute füllen und einrollen.\nPro Portion ca. 480 kcal · 40 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Putenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Vollkorn-Wraps",
+          "amount": 4,
+          "unit": "Stück"
+        },
+        {
+          "name": "Griechischer Joghurt",
+          "amount": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Tomaten",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Römersalat",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-6",
+      "name": "Leichte Kokos-Ramen mit Mie-Nudeln und Ei",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch"
+      ],
+      "notes": "1. Eier 7 Minuten wachsweich kochen, kalt abschrecken und pellen.\n2. Ingwer und Knoblauch fein hacken, mit der Currypaste in Öl 1 Minute anschwitzen.\n3. Gemüsebrühe und Kokosmilch dazugießen, aufkochen, Champignons in Scheiben dazugeben und 5 Minuten köcheln.\n4. Mie-Nudeln, Edamame und den in Streifen geschnittenen Pak Choi in die Brühe geben, 3–4 Minuten ziehen lassen.\n5. Mit Sojasoße und Limettensaft abschmecken, in Schüsseln füllen, halbierte Eier und Frühlingszwiebeln darauf.\nPro Portion ca. 480 kcal · 30 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Mie-Nudeln",
+          "amount": 125,
+          "unit": "g"
+        },
+        {
+          "name": "Eier",
+          "amount": 4,
+          "unit": "Stück"
+        },
+        {
+          "name": "Kokosmilch light",
+          "amount": 200,
+          "unit": "ml"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 600,
+          "unit": "ml"
+        },
+        {
+          "name": "Edamame",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Pak Choi",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Champignons",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Frühlingszwiebeln",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Rote Currypaste",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Limette",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "TL"
+        }
+      ]
+    },
+    {
+      "id": "gp-7",
+      "name": "Garnelen-Zucchini-Pasta",
+      "minutes": 20,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell",
+        "Fisch",
+        "Pasta"
+      ],
+      "notes": "1. Spaghetti kochen.\n2. Zucchini in dünne Streifen oder Halbmonde schneiden, Tomaten halbieren.\n3. Knoblauch und Chili in Olivenöl kurz anschwitzen, Garnelen 2–3 Minuten braten.\n4. Zucchini und Tomaten 3 Minuten mitbraten, Spaghetti mit etwas Nudelwasser untermischen.\n5. Mit Zitronensaft, Salz und Pfeffer abschmecken.\nPro Portion ca. 500 kcal · 34 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Garnelen",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Vollkornspaghetti",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Zucchini",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 2,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Zitrone",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Chiliflocken",
+          "amount": 1,
+          "unit": "Prise"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-8",
+      "name": "Tofu-Brokkoli-Pfanne mit Erdnusssoße",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch"
+      ],
+      "notes": "1. Reis kochen.\n2. Tofu gut ausdrücken, würfeln und in Öl rundum 8 Minuten knusprig braten.\n3. Brokkoli in Röschen dazugeben, 4 Minuten mitbraten.\n4. Erdnussmus, Sojasoße, Limettensaft, geriebenen Ingwer, Knoblauch und 4 EL Wasser verrühren, darübergeben.\n5. Kurz durchschwenken und mit Reis servieren.\nPro Portion ca. 550 kcal · 30 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Tofu",
+          "amount": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Brokkoli",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Erdnussmus",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 3,
+          "unit": "EL"
+        },
+        {
+          "name": "Limette",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    },
+    {
+      "id": "gp-9",
+      "name": "Gemüse-Omelett mit Hüttenkäse",
+      "minutes": 15,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell",
+        "vegetarisch"
+      ],
+      "notes": "1. Paprika würfeln, Champignons in Scheiben schneiden und in Öl 4 Minuten braten.\n2. Spinat zugeben und zusammenfallen lassen.\n3. Eier verquirlen, salzen, pfeffern, über das Gemüse gießen und bei mittlerer Hitze stocken lassen.\n4. Hüttenkäse daraufgeben, Omelett zusammenklappen und mit Schnittlauch bestreuen.\nPro Portion ca. 360 kcal · 32 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Eier",
+          "amount": 5,
+          "unit": "Stück"
+        },
+        {
+          "name": "Hüttenkäse",
+          "amount": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Babyspinat",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Champignons",
+          "amount": 4,
+          "unit": "Stück"
+        },
+        {
+          "name": "Schnittlauch",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-10",
+      "name": "Kichererbsen-Spinat-Curry",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch"
+      ],
+      "notes": "1. Reis kochen.\n2. Zwiebel, Knoblauch und Ingwer fein hacken und in Öl anschwitzen, Currypulver kurz mitrösten.\n3. Abgespülte Kichererbsen, Tomaten und Kokosmilch dazugeben, 10 Minuten köcheln.\n4. Spinat unterheben, salzen und mit Reis servieren.\n5. Tipp für mehr Eiweiß: mit 2 EL griechischem Joghurt pro Teller servieren.\nPro Portion ca. 480 kcal · 22 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Kichererbsen",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Gehackte Tomaten",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Kokosmilch light",
+          "amount": 200,
+          "unit": "ml"
+        },
+        {
+          "name": "Babyspinat",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Reis",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Currypulver",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-11",
+      "name": "Bulgur-Hack-Pfanne mit Paprika",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich"
+      ],
+      "notes": "1. Hack ohne Fett krümelig braten, Zwiebel, Knoblauch und Paprika gewürfelt dazugeben, 4 Minuten braten.\n2. Tomatenmark und Paprikapulver kurz mitrösten.\n3. Bulgur und Gemüsebrühe dazugeben, zugedeckt 10 Minuten quellen lassen.\n4. Mit Salz, Pfeffer und Petersilie abschmecken, mit einem Klecks Joghurt servieren.\nPro Portion ca. 560 kcal · 38 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderhackfleisch",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Bulgur",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Paprika",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Tomatenmark",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 250,
+          "unit": "ml"
+        },
+        {
+          "name": "Griechischer Joghurt",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Petersilie",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-12",
+      "name": "Hähnchen-Quinoa-Bowl mit Avocado",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich"
+      ],
+      "notes": "1. Quinoa abspülen und in doppelter Menge Salzwasser 15 Minuten garen.\n2. Hähnchen mit Paprikapulver, Salz und Pfeffer würzen und in Olivenöl je Seite 5–6 Minuten braten, in Scheiben schneiden.\n3. Avocado, Tomaten und Gurke schneiden, Mais abtropfen lassen.\n4. Alles in Schüsseln anrichten und mit Limettensaft beträufeln.\nPro Portion ca. 580 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Hähnchenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Quinoa",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Avocado",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Mais",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Limette",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-13",
+      "name": "Hähnchen-Reis-Wrap mit Mais und Joghurt-Dip",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich"
+      ],
+      "notes": "1. Reis kochen.\n2. Hähnchen in Streifen schneiden, mit Paprikapulver, Kreuzkümmel, Salz und Pfeffer würzen und in Öl 5–6 Minuten braten.\n3. Paprika in Streifen kurz mitbraten, Mais abtropfen lassen und unterheben.\n4. Joghurt mit Limettensaft, Salz und Pfeffer verrühren, Tomaten würfeln, Salat in Streifen schneiden.\n5. Wraps kurz in der Pfanne erwärmen, mit Reis, Hähnchen-Mischung, Salat, Tomaten und Dip füllen und fest einrollen.\nPro Portion ca. 650 kcal · 50 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Hähnchenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Reis",
+          "amount": 80,
+          "unit": "g"
+        },
+        {
+          "name": "Vollkorn-Wraps",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Mais",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Tomaten",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Römersalat",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Griechischer Joghurt",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Limette",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Kreuzkümmel",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-14",
+      "name": "Putengeschnetzeltes mit Champignons",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich"
+      ],
+      "notes": "1. Reis kochen.\n2. Pute in Streifen schneiden und in Öl 4 Minuten scharf anbraten, herausnehmen.\n3. Zwiebel und Champignons im Bratfett 5 Minuten braten.\n4. Gemüsebrühe, Frischkäse und Senf einrühren, Fleisch zurückgeben und 2 Minuten ziehen lassen.\n5. Mit Salz, Pfeffer und Petersilie abschmecken.\nPro Portion ca. 490 kcal · 44 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Putenbrust",
+          "amount": 350,
+          "unit": "g"
+        },
+        {
+          "name": "Champignons",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Frischkäse light",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 150,
+          "unit": "ml"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Petersilie",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Senf",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "gp-15",
+      "name": "Lachs-Bowl mit Edamame und Reis",
+      "minutes": 20,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell",
+        "Fisch"
+      ],
+      "notes": "1. Reis kochen, Edamame die letzten 4 Minuten in Salzwasser garen.\n2. Lachs in Würfel schneiden und in Öl 4–5 Minuten rundum braten, mit 1 EL Sojasoße ablöschen.\n3. Gurke und Möhre in Streifen, Avocado in Scheiben schneiden.\n4. Alles auf Reis anrichten, mit restlicher Sojasoße und Sesam servieren.\nPro Portion ca. 590 kcal · 38 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Lachsfilet",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Edamame",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Möhre",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Avocado",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 3,
+          "unit": "EL"
+        },
+        {
+          "name": "Sesam",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    }
+  ]
+}

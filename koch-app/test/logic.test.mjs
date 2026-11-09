@@ -72,3 +72,15 @@ test('Zuletzt gekocht zählt nur bis heute, ohne Tag ab Wochenende', () => {
   assert.equal(lastCooked(weeks, 'b', '2026-11-02'), 1); // Sonntag 1.11.
   assert.equal(lastCooked(weeks, 'c', '2026-11-02'), null); // diese Woche, noch nicht dran
 });
+
+test('Rezeptdatei fügt hinzu und überspringt gleichnamige Gerichte', async () => {
+  const { mergeDishes } = await import('../js/logic.js');
+  let n = 0;
+  const incoming = [{ id: 'x', name: ' bolognese ', ingredients: [] }, { id: 'y', name: 'Ramen', ingredients: [] },
+    { id: 'z', name: 'Ramen', ingredients: [] }, { name: '', ingredients: [] }];
+  const r = mergeDishes(dishes, incoming, () => `neu-${++n}`);
+  assert.equal(r.added, 1);
+  assert.equal(r.skipped, 3);
+  assert.deepEqual(r.dishes.map(d => d.id), ['a', 'b', 'neu-1']);
+  assert.equal(incoming[1].id, 'y'); // Eingabe bleibt unverändert
+});

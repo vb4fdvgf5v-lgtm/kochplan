@@ -1,4 +1,4 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients,
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, mergeDishes, RECIPE_FILE_KIND,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, demoWeeks } from './seed.js';
 import { parseRecipeText, SAMPLE_RECIPE_TEXT } from './import.js';
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.3.2';
+const APP_VERSION = '0.4';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -295,7 +295,7 @@ function viewDishes() {
     <div class="menu">
       <button data-action="pantry">${icon('inventory_2')}<span><b>Vorrat</b><small>${plural(data.staples.length, 'Zutat', 'Zutaten')}, die du meist im Haus hast</small></span>${icon('chevron_right')}</button>
       <button data-action="export">${icon('download')}<span><b>Daten sichern</b><small>Als Datei speichern, z. B. in iCloud Drive</small></span></button>
-      <button data-action="import">${icon('upload')}<span><b>Sicherung laden</b><small>Ersetzt die Daten auf diesem Gerät</small></span></button>
+      <button data-action="import">${icon('upload')}<span><b>Datei laden</b><small>Sicherung ersetzt die Daten, Rezeptdatei fügt Gerichte hinzu</small></span></button>
     </div>
     <p class="small muted center">Kochplan ${APP_VERSION} · Deine Daten liegen nur auf diesem Gerät.</p>`;
 
@@ -615,6 +615,7 @@ async function importData(file) {
   try {
     const parsed = JSON.parse(await file.text());
     if (!Array.isArray(parsed?.dishes)) throw new Error('keine Gerichte');
+    if (parsed.kind === RECIPE_FILE_KIND) { addRecipes(parsed.dishes); return; }
     if (!confirm(`Sicherung mit ${plural(parsed.dishes.length, 'Gericht', 'Gerichten')} laden? Die jetzigen Daten auf diesem Gerät werden ersetzt.`)) return;
     data = { ...emptyData(), ...parsed };
     save();
@@ -623,6 +624,17 @@ async function importData(file) {
     toast('Diese Datei ist keine Kochplan-Sicherung');
   }
   render();
+}
+
+// Rezeptdatei: Gerichte kommen dazu, Wochen, Einkauf und Vorrat bleiben unberührt
+function addRecipes(incoming) {
+  const result = mergeDishes(data.dishes, incoming, uid);
+  if (!result.added) { toast('Diese Gerichte hast du schon alle'); render(); return; }
+  if (!confirm(`${plural(result.added, 'Gericht', 'Gerichte')} hinzufügen? Deine bisherigen Gerichte und Wochen bleiben erhalten.`)) { render(); return; }
+  data.dishes = result.dishes;
+  ui.view = 'dishes';
+  toast(`${plural(result.added, 'Gericht', 'Gerichte')} hinzugefügt${result.skipped ? `, ${result.skipped} schon vorhanden` : ''}`);
+  commit();
 }
 
 function shareList() {

@@ -142,3 +142,18 @@ export function lastCooked(weeks, dishId, today) {
   }
   return last ? daysBetween(last, today) : null;
 }
+
+// Rezeptdatei ({ kind: 'kochplan-rezepte', dishes }) zu den vorhandenen Gerichten hinzufügen.
+// Gleichnamige Gerichte werden übersprungen, jedes neue bekommt eine eigene ID.
+export const RECIPE_FILE_KIND = 'kochplan-rezepte';
+export function mergeDishes(existing, incoming, makeId) {
+  const names = new Set(existing.map(d => keyOf(d.name)));
+  const added = [];
+  for (const d of incoming) {
+    const key = keyOf(d?.name);
+    if (!key || names.has(key) || !Array.isArray(d.ingredients)) continue;
+    names.add(key);
+    added.push({ ...structuredClone(d), id: makeId() });
+  }
+  return { dishes: [...existing, ...added], added: added.length, skipped: incoming.length - added.length };
+}

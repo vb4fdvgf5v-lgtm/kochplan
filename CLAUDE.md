@@ -3,7 +3,7 @@
 Persönliche Koch-App als PWA (zweite App neben dem Putzplan, gleiche Bauweise): eigene Gerichte sammeln,
 Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleisch kochen?“).
 
-## Stand (02.11.2026)
+## Stand (09.11.2026)
 
 - **Version 0.3.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
 - 0.2: Gerichte gehören zur **Woche**, ein Tag ist optional (Matthes' Wunsch: „Diese Woche koche ich das und das“).
@@ -12,6 +12,9 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
   erkennt Name, Portionen, Gesamtzeit, Zutatenzeilen und Arbeitsschritte (→ Notizen) mit Regeln, ohne KI. Ergebnis landet
   als Entwurf im Formular zum Prüfen. Im Demo-Modus gibt es einen „Beispieltext“. KI-Bilderkennung bewusst noch nicht
   (kostet pro Foto, braucht einen Server für den Schlüssel).
+- 0.4: **Rezeptdatei** (`{ kind: 'kochplan-rezepte', dishes }`) über „Datei laden“ fügt Gerichte hinzu
+  (`mergeDishes`, gleichnamige übersprungen), eine normale Sicherung ersetzt weiter alles. Erste Datei:
+  `rezepte-gesund-proteinreich.json` (15 gesunde, schnelle, eiweißreiche Gerichte, Quelltext in der gleichnamigen `.md`).
 - Matthes nutzt sie vorerst **allein**, deshalb kein Supabase: Daten liegen in `localStorage` (`koch:data`),
   Sicherung als JSON-Datei über „Daten sichern“.
 - Kein KI-Dialog gewünscht. Die App soll die Antworten über gute Ansichten liefern.
