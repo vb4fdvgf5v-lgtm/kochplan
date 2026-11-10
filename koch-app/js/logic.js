@@ -159,3 +159,18 @@ export function mergeDishes(existing, incoming, makeId) {
   }
   return { dishes: [...existing, ...added], added: added.length, skipped: incoming.length - added.length };
 }
+
+// Nach „Einkauf erledigt“: was wurde gekauft (Mengen wie auf der Liste, ganze Dosen/Packungen aufgerundet)
+export const boughtAmounts = item => Object.fromEntries(Object.entries(item.amounts)
+  .map(([unit, amount]) => [unit, WHOLE.includes(unit) ? Math.ceil(amount - 1e-9) : amount]));
+
+// Was nach dem Einkauf noch fehlt: null, wenn genug gekauft wurde, sonst die Zutat mit der Restmenge
+export function stillNeeded(item, bought) {
+  if (!bought) return item;
+  const rest = {};
+  for (const [unit, amount] of Object.entries(item.amounts)) {
+    const left = amount - (bought[unit] ?? 0);
+    if (left > 1e-9) rest[unit] = left;
+  }
+  return Object.keys(rest).length ? { ...item, amounts: rest, more: true } : null;
+}

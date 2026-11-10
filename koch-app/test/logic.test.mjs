@@ -90,3 +90,13 @@ test('Als gekocht markiert zählt das Kochdatum', () => {
   assert.equal(lastCooked(weeks, 'c', '2026-11-05'), 2); // nicht erst Sonntag
   assert.equal(lastCooked({}, 'd', '2026-11-05', ['2026-10-30', '2026-11-04']), 1); // ohne Plan, nur Verlauf
 });
+
+test('Nach dem Einkauf fehlt nur der Rest', async () => {
+  const { boughtAmounts, stillNeeded } = await import('../js/logic.js');
+  const item = { key: 'hack', amounts: { g: 500, Dose: 0.5 } };
+  const bought = boughtAmounts(item);
+  assert.deepEqual(bought, { g: 500, Dose: 1 });
+  assert.equal(stillNeeded(item, bought), null);
+  assert.deepEqual(stillNeeded({ ...item, amounts: { g: 750, Dose: 1 } }, bought).amounts, { g: 250 });
+  assert.equal(stillNeeded({ key: 'salz', amounts: {} }, {}), null); // ohne Menge: gekauft ist gekauft
+});

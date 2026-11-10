@@ -1,4 +1,4 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, mergeDishes, RECIPE_FILE_KIND,
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, mergeDishes, RECIPE_FILE_KIND, boughtAmounts, stillNeeded,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, demoWeeks } from './seed.js';
 import { parseRecipeText, SAMPLE_RECIPE_TEXT } from './import.js';
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.5';
+const APP_VERSION = '0.6';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -21,7 +21,7 @@ const ui = {
   view: NAV.some(([v]) => v === params.get('view')) ? params.get('view') : 'week',
   week: mondayOf(today()),
   sheet: null, // { type: 'entry' | 'pick' | 'dish' | 'edit' | 'paste' | 'pantry', ... }
-  dishSearch: '', dishSort: 'name', pickSearch: '', pickFast: false, findFast: false,
+  dishSearch: '', dishSort: 'name', boughtOpen: false, pickSearch: '', pickFast: false, findFast: false,
   pasteText: '', // Rezepttext zum Erkennen
   have: [], // Resteküche: was noch da ist
   toast: null, focus: null,
@@ -77,23 +77,30 @@ function toggleInWeek(week, dish) {
   return at < 0;
 }
 
-// Einkaufszustand je Woche: gekauft, „hab ich noch“, leere Vorratszutaten, eigene Zusätze
+// Einkaufszustand je Woche: im Wagen, „hab ich noch“, leere Vorratszutaten, eigene Zusätze.
+// bought: nach „Einkauf erledigt“ ausgeblendet, gemerkt mit der damaligen Menge. Braucht man später mehr, taucht es wieder auf.
 function shopState(week, create = false) {
-  const blank = { done: {}, have: {}, need: {}, extra: [] };
+  const blank = { done: {}, have: {}, need: {}, extra: [], bought: {} };
   if (create && !data.shop[week]) data.shop[week] = blank;
-  return data.shop[week] ?? blank;
+  const st = data.shop[week] ?? blank;
+  st.bought ??= {};
+  return st;
 }
 function shopGroups(week) {
   const s = shopState(week);
   const items = shoppingList(weekEntries(week), dishById, data.staples);
+  const wanted = items.filter(i => (!i.staple || s.need[i.key]) && !s.have[i.key]);
   return {
     s, items,
-    buy: items.filter(i => (!i.staple || s.need[i.key]) && !s.have[i.key]),
+    buy: wanted.map(i => stillNeeded(i, s.bought[i.key])).filter(Boolean),
+    boughtItems: wanted.filter(i => s.bought[i.key]),
+    extras: s.extra.filter(x => !x.bought),
+    boughtExtras: s.extra.filter(x => x.bought),
     staples: items.filter(i => i.staple && !s.need[i.key] && !s.have[i.key]),
     have: items.filter(i => s.have[i.key]),
   };
 }
-const openCount = g => g.buy.filter(i => !g.s.done[i.key]).length + g.s.extra.filter(x => !x.done).length;
+const openCount = g => g.buy.filter(i => !g.s.done[i.key]).length + g.extras.filter(x => !x.done).length;
 
 // ---------- Formatierung ----------
 
@@ -225,7 +232,7 @@ function viewShop() {
   const g = shopGroups(ui.week);
   const { s } = g;
   const header = `<header class="top"><h1>Einkauf</h1>
-    ${g.buy.length || s.extra.length ? `<button class="icon-btn" data-action="share" aria-label="Liste teilen">${icon('ios_share')}</button>` : ''}
+    ${g.buy.length || g.extras.length ? `<button class="icon-btn" data-action="share" aria-label="Liste teilen">${icon('ios_share')}</button>` : ''}
   </header>${weekNav()}`;
 
   if (!g.items.length && !s.extra.length) {
@@ -235,17 +242,21 @@ function viewShop() {
     </div>${extraForm()}`;
   }
 
-  const total = g.buy.length + s.extra.length;
+  const total = g.buy.length + g.extras.length;
   const done = total - openCount(g);
   const rows = [...g.buy].sort((a, b) => !!s.done[a.key] - !!s.done[b.key]).map(i => itemRow(i, s));
-  const extras = [...s.extra].sort((a, b) => a.done - b.done).map(extraRow);
-  const started = done > 0 || g.have.length > 0;
+  const extras = [...g.extras].sort((a, b) => a.done - b.done).map(extraRow);
+  const boughtCount = g.boughtItems.length + g.boughtExtras.length;
+  const started = done > 0 || g.have.length > 0 || boughtCount > 0;
 
   return `${header}
     ${total ? `<div class="progress"><div class="bar"><i style="width:${total ? (done / total) * 100 : 0}%"></i></div>
       <small class="num">${done} von ${total} im Wagen</small></div>` : ''}
-    ${started ? '' : `<p class="hint">${icon('lightbulb')}<span>Schau vorher kurz in Kühlschrank und Schrank: Was noch da ist, tippst du auf <b>Hab ich</b>.</span></p>`}
+    ${started || !total ? '' : `<p class="hint">${icon('lightbulb')}<span>Schau vorher kurz in Kühlschrank und Schrank: Was noch da ist, tippst du auf <b>Hab ich</b>.</span></p>`}
+    ${!total && boughtCount ? `<div class="empty-card done-card">${icon('check_circle')}<p><b>Alles eingekauft.</b> Kommt diese Woche noch etwas dazu, steht es wieder hier.</p></div>` : ''}
     <div class="list">${rows.join('')}${extras.join('')}</div>
+    ${done ? `<button class="btn primary wide" data-action="shop-finish">${icon('check_circle')}Einkauf erledigt</button>
+      <p class="small muted center">Blendet ${plural(done, 'abgehakte Sache', 'abgehakte Sachen')} aus. Der Rest bleibt auf der Liste.</p>` : ''}
     ${extraForm()}
     ${g.staples.length ? `<h2>Vorrat prüfen</h2>
       <p class="small muted">Brauchst du auch, hast du aber meist da. Tippe an, was leer ist.</p>
@@ -254,12 +265,20 @@ function viewShop() {
       <div class="list">${g.have.map(i => `<div class="item have">
         <span class="item-main">${icon('check')}<span class="item-text"><b>${esc(i.name)}</b><small>${esc(amountText(i))}</small></span></span>
         <button class="item-side ghost" data-action="unhave" data-key="${esc(i.key)}">Doch kaufen</button>
-      </div>`).join('')}</div>` : ''}`;
+      </div>`).join('')}</div>` : ''}
+    ${boughtCount ? `<div class="bought ${ui.boughtOpen ? 'open' : ''}"><button class="bought-head" data-action="toggle" data-key="boughtOpen" aria-expanded="${!!ui.boughtOpen}">${icon('shopping_cart')}Eingekauft (${boughtCount})</button>
+      ${ui.boughtOpen ? `<div class="list">${[
+        ...g.boughtItems.map(i => [i.name, amountText({ amounts: g.s.bought[i.key] }), `data-action="unbuy" data-key="${esc(i.key)}"`]),
+        ...g.boughtExtras.map(x => [x.name, 'selbst dazugeschrieben', `data-action="unbuy-extra" data-id="${x.id}"`]),
+      ].map(([name, sub, attrs]) => `<div class="item have">
+        <span class="item-main">${icon('check')}<span class="item-text"><b>${esc(name)}</b><small>${esc(sub)}</small></span></span>
+        <button class="item-side ghost" ${attrs}>Zurückholen</button>
+      </div>`).join('')}</div>` : ''}</div>` : ''}`;
 }
 
 function itemRow(i, s) {
   const done = !!s.done[i.key];
-  const sub = [amountText(i), i.dishes.join(', ')].filter(Boolean).join(' · ');
+  const sub = [amountText(i) && (i.more ? `noch ${amountText(i)} dazu` : amountText(i)), i.dishes.join(', ')].filter(Boolean).join(' · ');
   const side = i.staple
     ? `<button class="item-side ghost" data-action="unneed" data-key="${esc(i.key)}">Doch da</button>`
     : `<button class="item-side" data-action="have" data-key="${esc(i.key)}">Hab ich</button>`;
@@ -695,7 +714,7 @@ function shareList() {
   const g = shopGroups(ui.week);
   const lines = [
     ...g.buy.filter(i => !g.s.done[i.key]).map(i => `• ${i.name}${amountText(i) ? ` – ${amountText(i)}` : ''}`),
-    ...g.s.extra.filter(x => !x.done).map(x => `• ${x.name}`),
+    ...g.extras.filter(x => !x.done).map(x => `• ${x.name}`),
   ];
   const text = `Einkauf ${weekRange(ui.week)}\n${lines.join('\n')}`;
   if (navigator.share) navigator.share({ text }).catch(() => { /* abgebrochen */ });
@@ -765,6 +784,21 @@ const actions = {
   'extra-done': el => { const x = shopState(ui.week).extra.find(y => y.id === el.dataset.id); x.done = !x.done; commit(); },
   'extra-remove': el => { const s = shopState(ui.week); s.extra = s.extra.filter(y => y.id !== el.dataset.id); commit(); },
   share: shareList,
+  'shop-finish': () => {
+    const g = shopGroups(ui.week);
+    let n = 0;
+    for (const i of g.buy) if (g.s.done[i.key]) {
+      // Bei „noch dazu“ addiert sich der Nachkauf zum ersten Einkauf
+      const now = boughtAmounts(i), before = g.s.bought[i.key] ?? {};
+      for (const [unit, amount] of Object.entries(before)) now[unit] = (now[unit] ?? 0) + amount;
+      g.s.bought[i.key] = now; delete g.s.done[i.key]; n++;
+    }
+    for (const x of g.extras) if (x.done) { x.bought = true; n++; }
+    toast(`Einkauf erledigt: ${plural(n, 'Sache', 'Sachen')} ausgeblendet`);
+    commit();
+  },
+  unbuy: el => { delete shopState(ui.week, true).bought[el.dataset.key]; commit(); },
+  'unbuy-extra': el => { const x = shopState(ui.week).extra.find(y => y.id === el.dataset.id); x.bought = false; x.done = false; commit(); },
 
   // Gerichte
   dish: el => { openSheet({ type: 'dish', id: el.dataset.id }); render(); },

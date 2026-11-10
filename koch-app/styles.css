@@ -357,3 +357,13 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
 .rated { color: var(--accent) !important; display: inline-flex; align-items: center; gap: 3px; }
 .rated .ms { font-size: 14px; }
 .btn:disabled { opacity: .4; }
+
+/* Einkauf erledigt */
+.done-card { display: flex; align-items: center; gap: 12px; text-align: left; }
+.done-card > .ms { color: var(--accent); font-size: 32px; }
+.done-card p { margin: 0; }
+.bought { margin-top: 20px; }
+.bought-head { display: flex; align-items: center; gap: 8px; width: 100%; background: none; border: 0; cursor: pointer;
+  color: var(--muted); font: inherit; font-weight: 600; padding: 8px 0; }
+.bought-head::after { content: '▸'; margin-left: auto; }
+.bought.open .bought-head::after { content: '▾'; }
