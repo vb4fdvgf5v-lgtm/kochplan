@@ -367,3 +367,12 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
   color: var(--muted); font: inherit; font-weight: 600; padding: 8px 0; }
 .bought-head::after { content: '▸'; margin-left: auto; }
 .bought.open .bought-head::after { content: '▾'; }
+
+/* Bereiche in der Einkaufsliste */
+.cat-head { display: flex; align-items: baseline; justify-content: space-between; font-size: 15px; font-weight: 700;
+  margin: 22px 4px 8px; }
+.cat-head small { color: var(--muted); font-weight: 600; font-size: 13px; }
+.cat-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; }
+.cat-row .item-text { flex: 1; }
+.cat-row select { font-size: 16px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); max-width: 55%; }

@@ -1,4 +1,4 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, mergeDishes, RECIPE_FILE_KIND, boughtAmounts, stillNeeded,
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, demoWeeks } from './seed.js';
 import { parseRecipeText, SAMPLE_RECIPE_TEXT } from './import.js';
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.6';
+const APP_VERSION = '0.7';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -32,7 +32,7 @@ let data; // wird ganz unten geladen, wenn alle Hilfsfunktionen stehen
 
 // weeks: { montag: [{ id, dishId, servings, day }] }. Gerichte gehören zur Woche, ein Tag ist optional (day = null).
 function emptyData() {
-  return { version: 2, dishes: [], staples: [...DEFAULT_STAPLES], weeks: {}, shop: {} };
+  return { version: 2, dishes: [], staples: [...DEFAULT_STAPLES], weeks: {}, shop: {}, categories: {} };
 }
 function load() {
   try {
@@ -232,7 +232,9 @@ function viewShop() {
   const g = shopGroups(ui.week);
   const { s } = g;
   const header = `<header class="top"><h1>Einkauf</h1>
-    ${g.buy.length || g.extras.length ? `<button class="icon-btn" data-action="share" aria-label="Liste teilen">${icon('ios_share')}</button>` : ''}
+    ${g.buy.length || g.extras.length ? `<span class="top-actions">
+      <button class="icon-btn" data-action="cats" aria-label="Bereiche zuordnen">${icon('category')}</button>
+      <button class="icon-btn" data-action="share" aria-label="Liste teilen">${icon('ios_share')}</button></span>` : ''}
   </header>${weekNav()}`;
 
   if (!g.items.length && !s.extra.length) {
@@ -244,8 +246,11 @@ function viewShop() {
 
   const total = g.buy.length + g.extras.length;
   const done = total - openCount(g);
-  const rows = [...g.buy].sort((a, b) => !!s.done[a.key] - !!s.done[b.key]).map(i => itemRow(i, s));
-  const extras = [...g.extras].sort((a, b) => a.done - b.done).map(extraRow);
+  // Nach Supermarkt-Bereichen, im Bereich Offenes zuerst
+  const isDone = x => (x.key ? !!s.done[x.key] : !!x.done);
+  const sections = groupByCategory([...g.buy, ...g.extras], x => x.name, data.categories).map(sec =>
+    `<h3 class="cat-head">${esc(sec.name)}<small>${sec.items.filter(x => !isDone(x)).length || '✓'}</small></h3>
+    <div class="list">${[...sec.items].sort((a, b) => isDone(a) - isDone(b)).map(x => x.key ? itemRow(x, s) : extraRow(x)).join('')}</div>`).join('');
   const boughtCount = g.boughtItems.length + g.boughtExtras.length;
   const started = done > 0 || g.have.length > 0 || boughtCount > 0;
 
@@ -254,7 +259,7 @@ function viewShop() {
       <small class="num">${done} von ${total} im Wagen</small></div>` : ''}
     ${started || !total ? '' : `<p class="hint">${icon('lightbulb')}<span>Schau vorher kurz in Kühlschrank und Schrank: Was noch da ist, tippst du auf <b>Hab ich</b>.</span></p>`}
     ${!total && boughtCount ? `<div class="empty-card done-card">${icon('check_circle')}<p><b>Alles eingekauft.</b> Kommt diese Woche noch etwas dazu, steht es wieder hier.</p></div>` : ''}
-    <div class="list">${rows.join('')}${extras.join('')}</div>
+    ${sections}
     ${done ? `<button class="btn primary wide" data-action="shop-finish">${icon('check_circle')}Einkauf erledigt</button>
       <p class="small muted center">Blendet ${plural(done, 'abgehakte Sache', 'abgehakte Sachen')} aus. Der Rest bleibt auf der Liste.</p>` : ''}
     ${extraForm()}
@@ -394,7 +399,7 @@ function viewFind() {
 
 function viewSheet() {
   const s = ui.sheet;
-  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate }[s.type]();
+  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats }[s.type]();
   return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
@@ -532,6 +537,21 @@ function ratingRows(dish) {
   }).join('');
 }
 const ratingText = dish => Object.entries(RATING).filter(([k]) => dish.rating?.[k]).map(([k, r]) => `${r.short} ${dish.rating[k]}/5`);
+
+// Bereiche zuordnen: alles, was gerade auf der Liste steht, mit Auswahl des Bereichs. Gilt dauerhaft für die Zutat.
+function sheetCats() {
+  const g = shopGroups(ui.week);
+  const names = [...new Map([...g.buy, ...g.extras].map(x => [keyOf(x.name), x.name])).values()];
+  const groups = groupByCategory(names, n => n, data.categories);
+  return {
+    title: 'Bereiche zuordnen',
+    body: `<p class="muted">Steht etwas im falschen Bereich? Wähl den richtigen aus. Die App merkt sich das für diese Zutat.</p>
+      ${groups.map(sec => `<h4>${esc(sec.name)}</h4>
+        <div class="list">${sec.items.map(n => `<label class="item cat-row"><span class="item-text"><b>${esc(n)}</b></span>
+          <select data-cat="${esc(keyOf(n))}">${CATEGORIES.map(([id, label]) =>
+            `<option value="${id}" ${id === sec.id ? 'selected' : ''}>${label}</option>`).join('')}</select></label>`).join('')}</div>`).join('')}`,
+  };
+}
 
 function sheetRate() {
   const dish = dishById(ui.sheet.id);
@@ -712,10 +732,9 @@ function addRecipes(incoming) {
 
 function shareList() {
   const g = shopGroups(ui.week);
-  const lines = [
-    ...g.buy.filter(i => !g.s.done[i.key]).map(i => `• ${i.name}${amountText(i) ? ` – ${amountText(i)}` : ''}`),
-    ...g.extras.filter(x => !x.done).map(x => `• ${x.name}`),
-  ];
+  const open = [...g.buy.filter(i => !g.s.done[i.key]), ...g.extras.filter(x => !x.done)];
+  const lines = groupByCategory(open, x => x.name, data.categories).flatMap(sec => ['', sec.name,
+    ...sec.items.map(x => `• ${x.name}${x.amounts && amountText(x) ? ` – ${amountText(x)}` : ''}`)]);
   const text = `Einkauf ${weekRange(ui.week)}\n${lines.join('\n')}`;
   if (navigator.share) navigator.share({ text }).catch(() => { /* abgebrochen */ });
   else navigator.clipboard?.writeText(text).then(() => { toast('Liste kopiert'); render(); });
@@ -784,6 +803,7 @@ const actions = {
   'extra-done': el => { const x = shopState(ui.week).extra.find(y => y.id === el.dataset.id); x.done = !x.done; commit(); },
   'extra-remove': el => { const s = shopState(ui.week); s.extra = s.extra.filter(y => y.id !== el.dataset.id); commit(); },
   share: shareList,
+  cats: () => { openSheet({ type: 'cats' }); render(); },
   'shop-finish': () => {
     const g = shopGroups(ui.week);
     let n = 0;
@@ -924,6 +944,15 @@ function onInput(e) {
 $app.addEventListener('input', onInput);
 $app.addEventListener('change', e => {
   if (e.target.id === 'import-file' && e.target.files[0]) importData(e.target.files[0]);
+  else if (e.target.dataset.cat) {
+    // Eigene Zuordnung nur merken, wenn sie von der automatischen abweicht
+    const key = e.target.dataset.cat;
+    data.categories ??= {};
+    delete data.categories[key];
+    if (categoryOf(key) !== e.target.value) data.categories[key] = e.target.value;
+    toast('Bereich gemerkt');
+    commit();
+  }
   else if (e.target.tagName === 'SELECT') onInput(e);
 });
 

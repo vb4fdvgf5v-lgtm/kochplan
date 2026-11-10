@@ -1,6 +1,6 @@
 // Offline-Cache für die App-Dateien. Bei Änderungen VERSION hochzählen.
 // Eigener Name (kochplan-…), weil der Putzplan unter derselben Adresse eigene Caches hat.
-const VERSION = 'kochplan-v11';
+const VERSION = 'kochplan-v12';
 const FONTS = 'kochplan-fonts-v2';
 const ASSETS = ['./', 'index.html', 'styles.css', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-180.png',
   'js/app.js', 'js/logic.js', 'js/seed.js', 'js/import.js'];

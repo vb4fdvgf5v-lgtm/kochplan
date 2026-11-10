@@ -174,3 +174,52 @@ export function stillNeeded(item, bought) {
   }
   return Object.keys(rest).length ? { ...item, amounts: rest, more: true } : null;
 }
+
+// ---------- Kategorien (Supermarkt-Bereiche) ----------
+// Reihenfolge wie ein typischer Weg durch den Markt. Zuordnung über Wortanfänge, eigene Zuordnung geht vor.
+export const CATEGORIES = [
+  ['obst', 'Obst & Gemüse', ['apfel', 'äpfel', 'avocado', 'banane', 'basilikum', 'birne', 'blumenkohl', 'bohnen grün', 'brokkoli',
+    'champignon', 'chili', 'dill', 'erbsen', 'frühlingszwiebel', 'gurke', 'ingwer', 'kartoffel', 'knoblauch', 'kohl',
+    'koriander', 'kräuter', 'kürbis', 'lauch', 'limette', 'minze', 'möhre', 'karotte', 'orange', 'pak choi', 'paprika',
+    'petersilie', 'pilz', 'rosmarin', 'rucola', 'salat', 'römersalat', 'schnittlauch', 'sellerie', 'spinat', 'babyspinat', 'süßkartoffel',
+    'thymian', 'tomate', 'cherrytomate', 'zitrone', 'zucchini', 'zwiebel', 'rote zwiebel', 'aubergine', 'beeren', 'obst', 'gemüse']],
+  ['brot', 'Brot & Backwaren', ['brot', 'vollkornbrot', 'brötchen', 'toast', 'wrap', 'vollkorn-wrap', 'tortilla', 'baguette', 'fladenbrot']],
+  ['fleisch', 'Fleisch & Fisch', ['hack', 'rinderhack', 'hähnchen', 'huhn', 'pute', 'rind', 'schwein', 'steak', 'speck', 'schinken',
+    'wurst', 'salami', 'lachs', 'lachsfilet', 'kabeljau', 'fisch', 'garnele', 'thunfisch', 'forelle', 'filet', 'gyros', 'lamm']],
+  ['kuehl', 'Milch, Käse & Eier', ['milch', 'sahne', 'joghurt', 'griechischer joghurt', 'naturjoghurt', 'quark', 'skyr', 'käse',
+    'hüttenkäse', 'frischkäse', 'reibekäse', 'parmesan', 'feta', 'mozzarella', 'gouda', 'butter', 'ei', 'eier', 'schmand',
+    'crème fraîche', 'creme fraiche', 'tofu', 'halloumi']],
+  ['trocken', 'Nudeln, Reis & Getreide', ['nudel', 'spaghetti', 'vollkornspaghetti', 'bandnudeln', 'penne', 'fusilli', 'mie-nudel',
+    'reis', 'quinoa', 'bulgur', 'couscous', 'linsen', 'rote linsen', 'haferflocken', 'mehl', 'lasagne', 'gnocchi']],
+  ['konserven', 'Konserven & Gläser', ['dose', 'kichererbsen', 'kidneybohnen', 'weiße bohnen', 'bohnen', 'gehackte tomaten',
+    'passierte tomaten', 'tomatenmark', 'oliven', 'pesto', 'mais', 'kokosmilch', 'erdnussmus', 'nussmus', 'honig', 'marmelade']],
+  ['gewuerze', 'Gewürze, Öl & Soßen', ['salz', 'pfeffer', 'öl', 'olivenöl', 'essig', 'senf', 'ketchup', 'sojasoße', 'currypaste',
+    'rote currypaste', 'currypulver', 'curry', 'paprikapulver', 'kreuzkümmel', 'kurkuma', 'oregano', 'zimt', 'chiliflocken',
+    'gemüsebrühe', 'brühe', 'sesam', 'zucker', 'backpulver', 'sauce', 'soße']],
+  ['tk', 'Tiefkühl', ['tk', 'tiefkühl', 'gefroren', 'edamame']],
+  ['getraenke', 'Getränke', ['wasser', 'saft', 'wein', 'bier', 'kaffee', 'tee', 'limo']],
+  ['sonst', 'Sonstiges', []],
+];
+export const CATEGORY_NAMES = Object.fromEntries(CATEGORIES.map(([id, name]) => [id, name]));
+
+// Längster passender Begriff gewinnt: „Gehackte Tomaten“ → Konserven, „Tomate“ → Obst & Gemüse, „Kokosmilch“ → Kühlregal
+export function categoryOf(name, custom = {}) {
+  const key = keyOf(name);
+  if (custom[key]) return custom[key];
+  let best = null, len = 0;
+  for (const [id, , words] of CATEGORIES) for (const w of words) {
+    const hit = key === w || key.startsWith(w) || key.split(/[\s-]+/).some(part => part.startsWith(w)) || (w.includes(' ') && key.includes(w));
+    if (hit && w.length > len) { best = id; len = w.length; }
+  }
+  return best ?? 'sonst';
+}
+
+// Zutaten nach Kategorie gruppieren, in Markt-Reihenfolge, leere Gruppen weglassen
+export function groupByCategory(items, nameOf, custom = {}, order = CATEGORIES.map(([id]) => id)) {
+  const groups = new Map(order.map(id => [id, []]));
+  for (const item of items) {
+    const id = categoryOf(nameOf(item), custom);
+    (groups.get(id) ?? groups.set(id, []).get(id)).push(item);
+  }
+  return [...groups].filter(([, list]) => list.length).map(([id, list]) => ({ id, name: CATEGORY_NAMES[id] ?? id, items: list }));
+}

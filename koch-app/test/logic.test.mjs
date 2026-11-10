@@ -100,3 +100,17 @@ test('Nach dem Einkauf fehlt nur der Rest', async () => {
   assert.deepEqual(stillNeeded({ ...item, amounts: { g: 750, Dose: 1 } }, bought).amounts, { g: 250 });
   assert.equal(stillNeeded({ key: 'salz', amounts: {} }, {}), null); // ohne Menge: gekauft ist gekauft
 });
+
+test('Zutaten landen im passenden Supermarkt-Bereich', async () => {
+  const { categoryOf, groupByCategory } = await import('../js/logic.js');
+  assert.equal(categoryOf('Tomaten'), 'obst');
+  assert.equal(categoryOf('Gehackte Tomaten'), 'konserven');
+  assert.equal(categoryOf('Paprikapulver'), 'gewuerze');
+  assert.equal(categoryOf('Hähnchenbrust'), 'fleisch');
+  assert.equal(categoryOf('Reis'), 'trocken');
+  assert.equal(categoryOf('Eier'), 'kuehl');
+  assert.equal(categoryOf('Klopapier'), 'sonst');
+  assert.equal(categoryOf('Kokosmilch', { kokosmilch: 'kuehl' }), 'kuehl'); // eigene Zuordnung geht vor
+  const groups = groupByCategory([{ n: 'Reis' }, { n: 'Zwiebel' }, { n: 'Lachs' }], x => x.n);
+  assert.deepEqual(groups.map(g => g.id), ['obst', 'fleisch', 'trocken']);
+});
