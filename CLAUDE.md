@@ -3,9 +3,9 @@
 Persönliche Koch-App als PWA (zweite App neben dem Putzplan, gleiche Bauweise): eigene Gerichte sammeln,
 Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleisch kochen?“).
 
-## Stand (09.11.2026)
+## Stand (11.11.2026)
 
-- **Version 0.4.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
+- **Version 0.8.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
 - 0.2: Gerichte gehören zur **Woche**, ein Tag ist optional (Matthes' Wunsch: „Diese Woche koche ich das und das“).
   Daten: `weeks[montag] = [{ id, dishId, servings, day|null }]`; 0.1-Daten (`plan[datum]`) werden beim Laden umgestellt.
 - 0.3: **Rezept aus Foto-Text** (Gerichte → Einfügen). Text per iPhone-Livetext kopieren, einfügen, `js/import.js`
@@ -15,6 +15,16 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
 - 0.4: **Rezeptdatei** (`{ kind: 'kochplan-rezepte', dishes }`) über „Datei laden“ fügt Gerichte hinzu
   (`mergeDishes`, gleichnamige übersprungen), eine normale Sicherung ersetzt weiter alles. Erste Datei:
   `rezepte-gesund-proteinreich.json` (15 gesunde, schnelle, eiweißreiche Gerichte, Quelltext in der gleichnamigen `.md`).
+- 0.5: **„Gerade gekocht“** im Wochen-Eintrag und beim Gericht (`entry.cooked`, Verlauf `dish.cooked[]`), Woche zeigt
+  „Heute/Gestern gekocht“ bzw. „Gekocht am …“. `lastCooked` nutzt das echte Kochdatum.
+- 0.6: **Bewertung** `dish.rating = { taste, ease }` (1–5). Nach dem ersten Kochen fragt das Fenster „Wie war’s?“,
+  änderbar beim Gericht; Gerichteliste sortiert nach A–Z, Geschmack oder Einfachheit.
+- 0.7: **„Einkauf erledigt“** blendet Abgehaktes aus (`shop[montag].bought[key]` = gekaufte Mengen), „Eingekauft“
+  holt es zurück. Braucht der Plan später mehr, steht nur der Rest auf der Liste (`stillNeeded`).
+- 0.8: **Einkaufsliste nach Supermarkt-Bereichen** (`CATEGORIES`, `categoryOf` per Wortanfang, längster Treffer gewinnt),
+  eigene Zuordnung je Zutat in `data.categories`, Knopf „Bereiche zuordnen“ oben auf der Einkaufsliste.
+- In Arbeit (Prototyp, noch nicht committet): Märkte mit „gibt's hier / gibt's nicht“.
+  Danach geplant: Resteküche als geordnete Vorratsliste nach Bereichen.
 - Matthes nutzt sie vorerst **allein**, deshalb kein Supabase: Daten liegen in `localStorage` (`koch:data`),
   Sicherung als JSON-Datei über „Daten sichern“.
 - Kein KI-Dialog gewünscht. Die App soll die Antworten über gute Ansichten liefern.
