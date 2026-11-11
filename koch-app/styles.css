@@ -385,3 +385,13 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
 .missing-head { color: var(--muted); justify-content: flex-start; gap: 6px; }
 .missing-head .ms { font-size: 18px; }
 .missing-head small { margin-left: auto; }
+
+/* Resteküche */
+.home-item.focus { border-color: var(--accent); background: var(--accent-soft); }
+.card-row.match.complete { background: var(--green-soft); border-color: color-mix(in srgb, var(--green) 55%, transparent); }
+.all-there { display: inline-flex; align-items: center; gap: 4px; color: var(--green); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em; }
+.all-there .ms { font-size: 16px; }
+.fit { display: block; height: 4px; border-radius: 4px; background: var(--line); margin: 6px 0 4px; max-width: 160px; overflow: hidden; }
+.fit i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.complete .fit i { background: var(--green); }

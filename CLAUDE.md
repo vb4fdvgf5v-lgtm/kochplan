@@ -5,7 +5,7 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
 
 ## Stand (11.11.2026)
 
-- **Version 0.8.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
+- **Version 0.10.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
 - 0.2: Gerichte gehören zur **Woche**, ein Tag ist optional (Matthes' Wunsch: „Diese Woche koche ich das und das“).
   Daten: `weeks[montag] = [{ id, dishId, servings, day|null }]`; 0.1-Daten (`plan[datum]`) werden beim Laden umgestellt.
 - 0.3: **Rezept aus Foto-Text** (Gerichte → Einfügen). Text per iPhone-Livetext kopieren, einfügen, `js/import.js`
@@ -24,7 +24,7 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
 - 0.8: **Einkaufsliste nach Supermarkt-Bereichen** (`CATEGORIES`, `categoryOf` per Wortanfang, längster Treffer gewinnt),
   eigene Zuordnung je Zutat in `data.categories`, Knopf „Bereiche zuordnen“ oben auf der Einkaufsliste.
 - 0.9: **Supermärkte** (`data.stores[{ id, name, has, missing }]`, gewählter Markt `data.store`). Abgehakt im Markt = gibt es dort, durchgestrichener Wagen = gibt es nicht; Fehlendes steht unten mit Hinweis auf andere Märkte. Eine Bereichs-Reihenfolge für alle Märkte (so gewünscht).
-- Als Nächstes: Resteküche als geordnete Vorratsliste nach Bereichen.
+- 0.10: **Resteküche als Vorratsliste** (`data.home = [{ name, since }]`, bleibt gespeichert bis „Aufgebraucht“), nach Bereichen, Älteres zuerst, je Zutat „in N Gerichten“. Antippen filtert die Gerichte. Gerichte sortiert nach Passgenauigkeit (`matchDishes`: complete, share), „Alles zu Hause“ grün.
 - Matthes nutzt sie vorerst **allein**, deshalb kein Supabase: Daten liegen in `localStorage` (`koch:data`),
   Sicherung als JSON-Datei über „Daten sichern“.
 - Kein KI-Dialog gewünscht. Die App soll die Antworten über gute Ansichten liefern.

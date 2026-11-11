@@ -1,5 +1,5 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
-  ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked } from './logic.js';
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
+  ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked, daysBetween } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, demoWeeks } from './seed.js';
 import { parseRecipeText, SAMPLE_RECIPE_TEXT } from './import.js';
 
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.9';
+const APP_VERSION = '0.10';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -23,7 +23,7 @@ const ui = {
   sheet: null, // { type: 'entry' | 'pick' | 'dish' | 'edit' | 'paste' | 'pantry', ... }
   dishSearch: '', dishSort: 'name', boughtOpen: false, pickSearch: '', pickFast: false, findFast: false,
   pasteText: '', // Rezepttext zum Erkennen
-  have: [], // Resteküche: was noch da ist
+  findFocus: null, // Resteküche: nur Gerichte mit dieser Zutat
   toast: null, focus: null,
 };
 let data; // wird ganz unten geladen, wenn alle Hilfsfunktionen stehen
@@ -32,7 +32,7 @@ let data; // wird ganz unten geladen, wenn alle Hilfsfunktionen stehen
 
 // weeks: { montag: [{ id, dishId, servings, day }] }. Gerichte gehören zur Woche, ein Tag ist optional (day = null).
 function emptyData() {
-  return { version: 2, dishes: [], staples: [...DEFAULT_STAPLES], weeks: {}, shop: {}, categories: {}, stores: [], store: null };
+  return { version: 2, dishes: [], staples: [...DEFAULT_STAPLES], weeks: {}, shop: {}, categories: {}, stores: [], store: null, home: [] };
 }
 function load() {
   try {
@@ -397,38 +397,64 @@ function dishRow(d) {
   </button>`;
 }
 
+// Resteküche: was noch zu Hause ist, nach Bereichen geordnet (Älteres zuerst), darunter passende Gerichte.
+// data.home = [{ name, since }]. Antippen einer Zutat zeigt nur Gerichte, die sie nutzen.
 function viewFind() {
-  const haveKeys = ui.have.map(keyOf);
+  const home = data.home ?? [];
+  const homeKeys = home.map(h => keyOf(h.name));
+  const t = today();
+  const usedIn = key => data.dishes.filter(d => d.ingredients.some(i => sameIngredient(keyOf(i.name), key))).length;
+  const focus = home.find(h => keyOf(h.name) === ui.findFocus) ?? null;
   const suggestions = ingredientCounts(data.dishes)
-    .filter(c => !data.staples.includes(c.key) && !haveKeys.includes(c.key)).slice(0, 10);
-  const results = matchDishes(data.dishes, ui.have, data.staples)
-    .filter(r => !ui.findFast || (r.dish.minutes ?? 0) <= FAST);
+    .filter(c => !data.staples.includes(c.key) && !homeKeys.includes(c.key)).slice(0, 10);
 
-  let out;
-  if (!ui.have.length) {
-    out = `<p class="hint">${icon('lightbulb')}<span>Trag ein, was weg muss oder noch da ist. Du siehst dann, welche deiner Gerichte das nutzen und was noch fehlt.</span></p>`;
-  } else if (!results.length) {
-    out = `<p class="muted center pad">Keins deiner Gerichte nutzt ${ui.have.length > 1 ? 'diese Zutaten' : 'diese Zutat'}${ui.findFast ? ` in bis zu ${FAST} Minuten` : ''}.</p>`;
-  } else {
-    out = `<div class="list">${results.map(r => `<button class="card-row match" data-action="dish" data-id="${r.dish.id}">
-      <span class="card-text"><b>${esc(r.dish.name)}</b>
-        <small>${r.dish.minutes ? `${r.dish.minutes} Min. · ` : ''}${esc(ago(cookedAgo(r.dish)))}</small>
+  const groups = groupByCategory(home, h => h.name, data.categories).map(sec => `
+    <h3 class="cat-head">${esc(sec.name)}<small>${sec.items.length}</small></h3>
+    <div class="list">${[...sec.items].sort((a, b) => a.since.localeCompare(b.since)).map(h => {
+      const key = keyOf(h.name), days = daysBetween(h.since, t), n = usedIn(key);
+      const age = days <= 0 ? 'seit heute' : days === 1 ? 'seit gestern' : `seit ${days} Tagen`;
+      return `<div class="item home-item ${ui.findFocus === key ? 'focus' : ''}">
+        <button class="item-main" data-action="home-focus" data-key="${esc(key)}" aria-pressed="${ui.findFocus === key}">
+          <span class="item-text"><b>${esc(h.name)}</b><small>${age}${n ? ` · in ${plural(n, 'Gericht', 'Gerichten')}` : ' · in keinem Gericht'}</small></span>
+        </button>
+        <button class="item-side ghost" data-action="home-remove" data-key="${esc(key)}">Aufgebraucht</button>
+      </div>`;
+    }).join('')}</div>`).join('');
+
+  let results = matchDishes(data.dishes, home.map(h => h.name), data.staples)
+    .filter(r => !ui.findFast || (r.dish.minutes ?? 0) <= FAST);
+  if (focus) results = results.filter(r => r.hits.some(n => sameIngredient(keyOf(n), keyOf(focus.name))));
+  const dishes = !home.length ? '' : `
+    <h2>${focus ? `Mit ${esc(focus.name)} kochen` : 'Das kannst du kochen'}</h2>
+    <div class="chips">
+      ${focus ? `<button class="chip on" data-action="home-focus" data-key="${esc(keyOf(focus.name))}">${esc(focus.name)}${icon('close')}</button>` : ''}
+      <button class="chip ${ui.findFast ? 'on' : ''}" data-action="toggle" data-key="findFast">${icon('schedule')}bis ${FAST} Min.</button>
+    </div>
+    ${results.length ? `<div class="list">${results.map(r => {
+      const have = r.hits.length, all = have + r.missing.length;
+      return `<button class="card-row match ${r.complete ? 'complete' : ''}" data-action="dish" data-id="${r.dish.id}">
+      <span class="card-text">
+        ${r.complete ? `<span class="all-there">${icon('check_circle')}Alles zu Hause</span>` : ''}
+        <b>${esc(r.dish.name)}</b>
+        <small>${r.dish.minutes ? `${r.dish.minutes} Min. · ` : ''}${have} von ${all} Zutaten da · ${esc(ago(cookedAgo(r.dish)))}</small>
+        <span class="fit"><i style="width:${Math.round(r.share * 100)}%"></i></span>
         <small class="hits">${icon('check')}${esc(r.hits.join(', '))}</small>
-        <small class="${r.missing.length ? 'miss' : 'hits'}">${r.missing.length ? `Fehlt: ${esc(r.missing.join(', '))}` : 'Sonst alles da (außer Vorrat)'}</small>
+        ${r.missing.length ? `<small class="miss">Fehlt: ${esc(r.missing.join(', '))}</small>` : ''}
       </span>${icon('chevron_right')}
-    </button>`).join('')}</div>`;
-  }
+    </button>`;
+    }).join('')}</div>`
+      : `<p class="muted center pad">Keins deiner Gerichte nutzt ${focus ? esc(focus.name) : 'diese Zutaten'}${ui.findFast ? ` in bis zu ${FAST} Minuten` : ''}.</p>`}`;
 
   return `<header class="top"><h1>Resteküche</h1></header>
+    <p class="muted small">Was du noch zu Hause hast. Tipp eine Zutat an, um nur Gerichte damit zu sehen.</p>
     <form class="inline-form" data-form="have">
       <input id="have-input" name="have" list="ing-list" placeholder="Was ist noch da? z. B. Hackfleisch" autocomplete="off" enterkeyhint="done">
       <button class="icon-btn filled" aria-label="Hinzufügen">${icon('add')}</button>
     </form>
-    ${ui.have.length ? `<div class="chips">${ui.have.map((h, i) => `<button class="chip on" data-action="have-remove" data-i="${i}">${esc(h)}${icon('close')}</button>`).join('')}
-      <button class="chip ${ui.findFast ? 'on' : ''}" data-action="toggle" data-key="findFast">${icon('schedule')}bis ${FAST} Min.</button></div>` : ''}
-    ${suggestions.length ? `<p class="small muted">Häufig in deinen Gerichten:</p>
-      <div class="chips">${suggestions.map(c => `<button class="chip" data-action="have-add" data-name="${esc(c.name)}">${esc(c.name)}</button>`).join('')}</div>` : ''}
-    ${out}`;
+    ${home.length ? groups : `<p class="hint">${icon('lightbulb')}<span>Trag ein, was noch da ist oder weg muss. Die Liste bleibt gespeichert, bis du etwas als aufgebraucht markierst.</span></p>`}
+    ${suggestions.length ? `<p class="small muted">Schnell hinzufügen:</p>
+      <div class="chips">${suggestions.map(c => `<button class="chip" data-action="have-add" data-name="${esc(c.name)}">${icon('add')}${esc(c.name)}</button>`).join('')}</div>` : ''}
+    ${dishes}`;
 }
 
 // ---------- Fenster (Bottom Sheets) ----------
@@ -977,13 +1003,19 @@ const actions = {
   import: () => document.getElementById('import-file').click(),
 
   // Resteküche
-  'have-add': el => { addHave(el.dataset.name); render(); },
-  'have-remove': el => { ui.have.splice(Number(el.dataset.i), 1); render(); },
+  'have-add': el => { addHave(el.dataset.name); commit(); },
+  'home-remove': el => {
+    data.home = data.home.filter(h => keyOf(h.name) !== el.dataset.key);
+    if (ui.findFocus === el.dataset.key) ui.findFocus = null;
+    commit();
+  },
+  'home-focus': el => { ui.findFocus = ui.findFocus === el.dataset.key ? null : el.dataset.key; render(); },
 };
 
 function addHave(text) {
   for (const name of String(text).split(',').map(t => t.trim()).filter(Boolean)) {
-    if (!ui.have.some(h => keyOf(h) === keyOf(name))) ui.have.push(name);
+    data.home ??= [];
+    if (!data.home.some(h => keyOf(h.name) === keyOf(name))) data.home.push({ name, since: today() });
   }
 }
 
@@ -1008,7 +1040,7 @@ const forms = {
   have: form => {
     addHave(form.have.value);
     ui.focus = 'have-input';
-    render();
+    commit();
   },
   dish: saveDish,
 };

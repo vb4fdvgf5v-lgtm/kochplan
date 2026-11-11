@@ -114,3 +114,12 @@ test('Zutaten landen im passenden Supermarkt-Bereich', async () => {
   const groups = groupByCategory([{ n: 'Reis' }, { n: 'Zwiebel' }, { n: 'Lachs' }], x => x.n);
   assert.deepEqual(groups.map(g => g.id), ['obst', 'fleisch', 'trocken']);
 });
+
+test('Resteküche: am besten passende Gerichte zuerst, komplett passende markiert', () => {
+  // Bolognese braucht Hack, Zwiebel, Tomaten (Salz ist Vorrat), Chili Hack, Tomaten, Reis
+  const r = matchDishes(dishes, ['Hackfleisch', 'Gehackte Tomaten', 'Reis'], ['salz']);
+  assert.deepEqual(r.map(x => x.dish.id), ['b', 'a']);
+  assert.equal(r[0].complete, true);
+  assert.equal(r[1].complete, false);
+  assert.ok(Math.abs(r[1].share - 2 / 3) < 1e-9);
+});

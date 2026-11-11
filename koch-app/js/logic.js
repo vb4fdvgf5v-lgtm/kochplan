@@ -71,11 +71,14 @@ export function matchDishes(dishes, have, staples = []) {
       .filter(i => i.key && !staples.includes(i.key));
     const hits = ings.filter(i => haveKeys.some(h => sameIngredient(i.key, h)));
     const missing = ings.filter(i => !hits.includes(i));
-    return { dish, hits: hits.map(i => i.name), missing: missing.map(i => i.name) };
+    const total = hits.length + missing.length;
+    return { dish, hits: hits.map(i => i.name), missing: missing.map(i => i.name),
+      complete: !missing.length, share: total ? hits.length / total : 0 };
   })
     .filter(r => r.hits.length)
-    .sort((a, b) => b.hits.length - a.hits.length || a.missing.length - b.missing.length
-      || (a.dish.minutes ?? 999) - (b.dish.minutes ?? 999));
+    // Am besten passend oben: alles da, dann größter Anteil vorhandener Zutaten, dann weniger Fehlendes, dann schneller
+    .sort((a, b) => b.complete - a.complete || b.share - a.share || a.missing.length - b.missing.length
+      || b.hits.length - a.hits.length || (a.dish.minutes ?? 999) - (b.dish.minutes ?? 999));
 }
 
 // Zutaten eines Gerichts, die andere geplante Gerichte auch brauchen (ohne Vorrat)
