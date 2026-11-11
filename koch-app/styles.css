@@ -376,3 +376,12 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
 .cat-row .item-text { flex: 1; }
 .cat-row select { font-size: 16px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line);
   background: var(--surface); max-width: 55%; }
+
+/* Supermärkte */
+.store-bar { display: grid; gap: 6px; margin: 4px 0 6px; }
+.store-bar .chip small { color: var(--muted); font-size: 12px; margin-left: 2px; }
+.store-bar .chip.on small { color: inherit; opacity: .8; }
+.chip.ghost { background: transparent; border-style: dashed; color: var(--muted); }
+.missing-head { color: var(--muted); justify-content: flex-start; gap: 6px; }
+.missing-head .ms { font-size: 18px; }
+.missing-head small { margin-left: auto; }

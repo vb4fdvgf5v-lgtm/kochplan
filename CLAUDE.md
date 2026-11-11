@@ -23,8 +23,8 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
   holt es zurück. Braucht der Plan später mehr, steht nur der Rest auf der Liste (`stillNeeded`).
 - 0.8: **Einkaufsliste nach Supermarkt-Bereichen** (`CATEGORIES`, `categoryOf` per Wortanfang, längster Treffer gewinnt),
   eigene Zuordnung je Zutat in `data.categories`, Knopf „Bereiche zuordnen“ oben auf der Einkaufsliste.
-- In Arbeit (Prototyp, noch nicht committet): Märkte mit „gibt's hier / gibt's nicht“.
-  Danach geplant: Resteküche als geordnete Vorratsliste nach Bereichen.
+- 0.9: **Supermärkte** (`data.stores[{ id, name, has, missing }]`, gewählter Markt `data.store`). Abgehakt im Markt = gibt es dort, durchgestrichener Wagen = gibt es nicht; Fehlendes steht unten mit Hinweis auf andere Märkte. Eine Bereichs-Reihenfolge für alle Märkte (so gewünscht).
+- Als Nächstes: Resteküche als geordnete Vorratsliste nach Bereichen.
 - Matthes nutzt sie vorerst **allein**, deshalb kein Supabase: Daten liegen in `localStorage` (`koch:data`),
   Sicherung als JSON-Datei über „Daten sichern“.
 - Kein KI-Dialog gewünscht. Die App soll die Antworten über gute Ansichten liefern.

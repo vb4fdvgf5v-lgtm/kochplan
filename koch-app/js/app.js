@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.8';
+const APP_VERSION = '0.9';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -32,7 +32,7 @@ let data; // wird ganz unten geladen, wenn alle Hilfsfunktionen stehen
 
 // weeks: { montag: [{ id, dishId, servings, day }] }. Gerichte gehören zur Woche, ein Tag ist optional (day = null).
 function emptyData() {
-  return { version: 2, dishes: [], staples: [...DEFAULT_STAPLES], weeks: {}, shop: {}, categories: {} };
+  return { version: 2, dishes: [], staples: [...DEFAULT_STAPLES], weeks: {}, shop: {}, categories: {}, stores: [], store: null };
 }
 function load() {
   try {
@@ -76,6 +76,12 @@ function toggleInWeek(week, dish) {
   else list.push({ id: uid(), dishId: dish.id, servings: dish.servings || 2, day: null });
   return at < 0;
 }
+
+// Supermärkte: stores = [{ id, name, has: { key: true }, missing: { key: true } }], data.store = gewählter Markt
+const currentStore = () => data.stores?.find(x => x.id === data.store) ?? null;
+const missingIn = (store, key) => !!store?.missing?.[key];
+// Andere Märkte, in denen es die Zutat gibt (dort schon gekauft)
+const elsewhere = (key, store) => (data.stores ?? []).filter(x => x !== store && x.has?.[key]).map(x => x.name);
 
 // Einkaufszustand je Woche: im Wagen, „hab ich noch“, leere Vorratszutaten, eigene Zusätze.
 // bought: nach „Einkauf erledigt“ ausgeblendet, gemerkt mit der damaligen Menge. Braucht man später mehr, taucht es wieder auf.
@@ -246,9 +252,13 @@ function viewShop() {
 
   const total = g.buy.length + g.extras.length;
   const done = total - openCount(g);
-  // Nach Supermarkt-Bereichen, im Bereich Offenes zuerst
+  // Nach Supermarkt-Bereichen, im Bereich Offenes zuerst. Was es im gewählten Markt nicht gibt, steht unten extra.
   const isDone = x => (x.key ? !!s.done[x.key] : !!x.done);
-  const sections = groupByCategory([...g.buy, ...g.extras], x => x.name, data.categories).map(sec =>
+  const store = currentStore();
+  const notHere = x => !isDone(x) && missingIn(store, keyOf(x.name));
+  const all = [...g.buy, ...g.extras];
+  const missing = all.filter(notHere);
+  const sections = groupByCategory(all.filter(x => !notHere(x)), x => x.name, data.categories).map(sec =>
     `<h3 class="cat-head">${esc(sec.name)}<small>${sec.items.filter(x => !isDone(x)).length || '✓'}</small></h3>
     <div class="list">${[...sec.items].sort((a, b) => isDone(a) - isDone(b)).map(x => x.key ? itemRow(x, s) : extraRow(x)).join('')}</div>`).join('');
   const boughtCount = g.boughtItems.length + g.boughtExtras.length;
@@ -259,7 +269,17 @@ function viewShop() {
       <small class="num">${done} von ${total} im Wagen</small></div>` : ''}
     ${started || !total ? '' : `<p class="hint">${icon('lightbulb')}<span>Schau vorher kurz in Kühlschrank und Schrank: Was noch da ist, tippst du auf <b>Hab ich</b>.</span></p>`}
     ${!total && boughtCount ? `<div class="empty-card done-card">${icon('check_circle')}<p><b>Alles eingekauft.</b> Kommt diese Woche noch etwas dazu, steht es wieder hier.</p></div>` : ''}
+    ${storeBar(all.filter(x => !isDone(x)))}
     ${sections}
+    ${missing.length ? `<h3 class="cat-head missing-head">${icon('remove_shopping_cart')}Gibt's bei ${esc(store.name)} nicht<small>${missing.length}</small></h3>
+      <div class="list">${missing.map(x => {
+        const key = keyOf(x.name), alt = elsewhere(key, store);
+        return `<div class="item have">
+          <span class="item-main"><span class="item-text"><b>${esc(x.name)}</b>
+            <small>${alt.length ? `Gibt's bei ${esc(alt.join(', '))}` : 'Woanders besorgen'}${x.amounts && amountText(x) ? ` · ${esc(amountText(x))}` : ''}</small></span></span>
+          <button class="item-side ghost" data-action="not-missing" data-key="${esc(key)}">Gibt's doch</button>
+        </div>`;
+      }).join('')}</div>` : ''}
     ${done ? `<button class="btn primary wide" data-action="shop-finish">${icon('check_circle')}Einkauf erledigt</button>
       <p class="small muted center">Blendet ${plural(done, 'abgehakte Sache', 'abgehakte Sachen')} aus. Der Rest bleibt auf der Liste.</p>` : ''}
     ${extraForm()}
@@ -293,8 +313,10 @@ function itemRow(i, s) {
       <span class="item-text"><b>${esc(i.name)}</b><small>${esc(sub)}</small></span>
     </button>
     ${done ? '' : side}
+    ${!done && currentStore() ? missingBtn(i.key) : ''}
   </div>`;
 }
+const missingBtn = key => `<button class="icon-btn" data-action="missing" data-key="${esc(key)}" aria-label="Gibt's hier nicht">${icon('remove_shopping_cart')}</button>`;
 
 function extraRow(x) {
   return `<div class="item ${x.done ? 'done' : ''}">
@@ -302,8 +324,22 @@ function extraRow(x) {
       <span class="ms tick" aria-hidden="true">${x.done ? 'check_circle' : 'radio_button_unchecked'}</span>
       <span class="item-text"><b>${esc(x.name)}</b><small>selbst dazugeschrieben</small></span>
     </button>
+    ${!x.done && currentStore() ? missingBtn(keyOf(x.name)) : ''}
     <button class="icon-btn" data-action="extra-remove" data-id="${x.id}" aria-label="Entfernen">${icon('close')}</button>
   </div>`;
+}
+
+// „Einkaufen bei“: Märkte zum Antippen, mit Hinweis, wie viel es dort (bekanntermaßen) nicht gibt
+function storeBar(open) {
+  const stores = data.stores ?? [];
+  const chip = st => {
+    const miss = open.filter(x => missingIn(st, keyOf(x.name))).length;
+    const on = data.store === st.id;
+    return `<button class="chip ${on ? 'on' : ''}" data-action="store" data-id="${st.id}" aria-pressed="${on}">${icon('storefront')}${esc(st.name)}${miss ? `<small>${miss} ${miss === 1 ? 'fehlt' : 'fehlen'}</small>` : ''}</button>`;
+  };
+  return `<div class="store-bar"><small class="muted">Einkaufen bei</small>
+    <div class="chips">${stores.map(chip).join('')}
+      <button class="chip ghost" data-action="stores">${icon(stores.length ? 'edit' : 'add')}${stores.length ? 'Märkte' : 'Supermarkt anlegen'}</button></div></div>`;
 }
 
 const extraForm = () => `<form class="inline-form" data-form="extra">
@@ -399,7 +435,7 @@ function viewFind() {
 
 function viewSheet() {
   const s = ui.sheet;
-  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats }[s.type]();
+  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores }[s.type]();
   return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
@@ -550,6 +586,23 @@ function sheetCats() {
         <div class="list">${sec.items.map(n => `<label class="item cat-row"><span class="item-text"><b>${esc(n)}</b></span>
           <select data-cat="${esc(keyOf(n))}">${CATEGORIES.map(([id, label]) =>
             `<option value="${id}" ${id === sec.id ? 'selected' : ''}>${label}</option>`).join('')}</select></label>`).join('')}</div>`).join('')}`,
+  };
+}
+
+function sheetStores() {
+  const stores = data.stores ?? [];
+  return {
+    title: 'Supermärkte',
+    body: `<p class="muted">Wähl auf der Einkaufsliste, wo du gerade einkaufst. Was du dort abhakst, gibt es da. Was fehlt, markierst du mit ${icon('remove_shopping_cart')}. So weiß die App beim nächsten Mal Bescheid.</p>
+      ${stores.length ? `<div class="list">${stores.map(st => `<div class="item">
+        <span class="item-main">${icon('storefront')}<span class="item-text"><b>${esc(st.name)}</b>
+          <small>${plural(Object.keys(st.has ?? {}).length, 'Zutat', 'Zutaten')} gibt's hier · ${Object.keys(st.missing ?? {}).length} nicht</small></span></span>
+        <button class="icon-btn" data-action="store-remove" data-id="${st.id}" aria-label="${esc(st.name)} löschen">${icon('delete')}</button>
+      </div>`).join('')}</div>` : ''}
+      <form class="inline-form" data-form="store">
+        <input id="store-input" name="store" placeholder="Neuer Markt, z. B. Rewe" autocomplete="off" enterkeyhint="done">
+        <button class="icon-btn filled" aria-label="Markt anlegen">${icon('add')}</button>
+      </form>`,
   };
 }
 
@@ -740,6 +793,14 @@ function shareList() {
   else navigator.clipboard?.writeText(text).then(() => { toast('Liste kopiert'); render(); });
 }
 
+// Im gewählten Markt abgehakt: gibt es dort
+function rememberHas(key) {
+  const st = currentStore();
+  if (!st) return;
+  (st.has ??= {})[key] = true;
+  delete st.missing?.[key];
+}
+
 const actions = {
   go: el => { ui.view = el.dataset.view; ui.sheet = null; render(); scrollTo(0, 0); },
   week: el => { ui.week = addDays(ui.week, 7 * Number(el.dataset.dir)); render(); },
@@ -795,12 +856,34 @@ const actions = {
   },
 
   // Einkauf
-  'toggle-done': el => { const s = shopState(ui.week, true); s.done[el.dataset.key] = !s.done[el.dataset.key]; commit(); },
+  'toggle-done': el => {
+    const s = shopState(ui.week, true), key = el.dataset.key;
+    s.done[key] = !s.done[key];
+    if (s.done[key]) rememberHas(key);
+    commit();
+  },
+  store: el => { data.store = data.store === el.dataset.id ? null : el.dataset.id; commit(); },
+  stores: () => { openSheet({ type: 'stores' }); render(); },
+  missing: el => {
+    const st = currentStore();
+    (st.missing ??= {})[el.dataset.key] = true;
+    delete st.has?.[el.dataset.key];
+    toast(`Gemerkt: gibt's bei ${st.name} nicht`);
+    commit();
+  },
+  'not-missing': el => { delete currentStore()?.missing?.[el.dataset.key]; commit(); },
+  'store-remove': el => {
+    const st = data.stores.find(x => x.id === el.dataset.id);
+    if (!confirm(`${st.name} löschen? Was die App über diesen Markt weiß, geht verloren.`)) return;
+    data.stores = data.stores.filter(x => x !== st);
+    if (data.store === st.id) data.store = null;
+    commit();
+  },
   have: el => { shopState(ui.week, true).have[el.dataset.key] = true; commit(); },
   unhave: el => { delete shopState(ui.week, true).have[el.dataset.key]; commit(); },
   need: el => { shopState(ui.week, true).need[el.dataset.key] = true; commit(); },
   unneed: el => { delete shopState(ui.week, true).need[el.dataset.key]; commit(); },
-  'extra-done': el => { const x = shopState(ui.week).extra.find(y => y.id === el.dataset.id); x.done = !x.done; commit(); },
+  'extra-done': el => { const x = shopState(ui.week).extra.find(y => y.id === el.dataset.id); x.done = !x.done; if (x.done) rememberHas(keyOf(x.name)); commit(); },
   'extra-remove': el => { const s = shopState(ui.week); s.extra = s.extra.filter(y => y.id !== el.dataset.id); commit(); },
   share: shareList,
   cats: () => { openSheet({ type: 'cats' }); render(); },
@@ -905,6 +988,16 @@ function addHave(text) {
 }
 
 const forms = {
+  store: form => {
+    const name = form.store.value.trim();
+    if (!name) return;
+    const st = { id: uid(), name, has: {}, missing: {} };
+    (data.stores ??= []).push(st);
+    data.store = st.id;
+    ui.focus = 'store-input';
+    toast(`${name} angelegt und ausgewählt`);
+    commit();
+  },
   extra: form => {
     const name = form.extra.value.trim();
     if (!name) return;
