@@ -472,7 +472,7 @@ function viewFind() {
 function viewSheet() {
   const s = ui.sheet;
   const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics }[s.type]();
-  return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''}" data-action="backdrop">
+  return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''} ${s.type === 'basics' ? 'full' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
         <button class="icon-btn" data-action="close" aria-label="Schließen">${icon('close')}</button></header>
@@ -670,7 +670,7 @@ function sheetBasics() {
         </form>
         ${ideas.length ? `<p class="small muted">Vorschläge:</p>
           <div class="chips">${ideas.map(n => `<button class="chip ghost" data-action="basic-idea" data-name="${esc(n)}">${icon('add')}${esc(n)}</button>`).join('')}</div>` : ''}` : ''}
-      <div class="btn-row">
+      <div class="btn-row sheet-actions">
         ${basics.length && !ui.basicsEdit ? `<button class="btn primary" data-action="basics-add" ${picked ? '' : 'disabled'}>${icon('add_shopping_cart')}${picked ? `${plural(picked, 'Sache', 'Sachen')} auf die Liste` : 'Auf die Liste'}</button>` : ''}
         ${basics.length ? `<button class="btn ghost" data-action="toggle" data-key="basicsEdit">${icon(ui.basicsEdit ? 'check' : 'edit')}${ui.basicsEdit ? 'Fertig' : 'Basics bearbeiten'}</button>` : ''}
       </div>`,
