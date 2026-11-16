@@ -1,6 +1,6 @@
 import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked, daysBetween } from './logic.js';
-import { SAMPLE_DISHES, DEFAULT_STAPLES, demoWeeks } from './seed.js';
+import { SAMPLE_DISHES, DEFAULT_STAPLES, DEFAULT_BASICS, demoWeeks } from './seed.js';
 import { parseRecipeText, SAMPLE_RECIPE_TEXT } from './import.js';
 
 const $app = document.getElementById('app');
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.10';
+const APP_VERSION = '0.11';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -23,6 +23,7 @@ const ui = {
   sheet: null, // { type: 'entry' | 'pick' | 'dish' | 'edit' | 'paste' | 'pantry', ... }
   dishSearch: '', dishSort: 'name', boughtOpen: false, pickSearch: '', pickFast: false, findFast: false,
   pasteText: '', // Rezepttext zum Erkennen
+  basicsPick: [], basicsEdit: false, // Basics prüfen: angetippte Basics, Bearbeiten-Modus
   findFocus: null, // Resteküche: nur Gerichte mit dieser Zutat
   toast: null, focus: null,
 };
@@ -32,7 +33,7 @@ let data; // wird ganz unten geladen, wenn alle Hilfsfunktionen stehen
 
 // weeks: { montag: [{ id, dishId, servings, day }] }. Gerichte gehören zur Woche, ein Tag ist optional (day = null).
 function emptyData() {
-  return { version: 2, dishes: [], staples: [...DEFAULT_STAPLES], weeks: {}, shop: {}, categories: {}, stores: [], store: null, home: [] };
+  return { version: 2, dishes: [], staples: [...DEFAULT_STAPLES], weeks: {}, shop: {}, categories: {}, stores: [], store: null, home: [], basics: structuredClone(DEFAULT_BASICS) };
 }
 function load() {
   try {
@@ -244,8 +245,8 @@ function viewShop() {
   </header>${weekNav()}`;
 
   if (!g.items.length && !s.extra.length) {
-    return `${header}<div class="empty-card">
-      <p>Für diese Woche ist noch nichts geplant. Sobald Gerichte im Plan stehen, sammelt sich hier alles, was du dafür brauchst.</p>
+    return `${header}${basicsButton()}<div class="empty-card">
+      <p>Für diese Woche ist noch nichts geplant. Sobald Gerichte im Plan stehen, sammelt sich hier alles, was du dafür brauchst. Für einen normalen Einkauf prüfst du oben deine Basics.</p>
       <button class="btn primary" data-action="go" data-view="week">${icon('calendar_month')}Zum Essensplan</button>
     </div>${extraForm()}`;
   }
@@ -269,6 +270,7 @@ function viewShop() {
       <small class="num">${done} von ${total} im Wagen</small></div>` : ''}
     ${started || !total ? '' : `<p class="hint">${icon('lightbulb')}<span>Schau vorher kurz in Kühlschrank und Schrank: Was noch da ist, tippst du auf <b>Hab ich</b>.</span></p>`}
     ${!total && boughtCount ? `<div class="empty-card done-card">${icon('check_circle')}<p><b>Alles eingekauft.</b> Kommt diese Woche noch etwas dazu, steht es wieder hier.</p></div>` : ''}
+    ${basicsButton()}
     ${storeBar(all.filter(x => !isDone(x)))}
     ${sections}
     ${missing.length ? `<h3 class="cat-head missing-head">${icon('remove_shopping_cart')}Gibt's bei ${esc(store.name)} nicht<small>${missing.length}</small></h3>
@@ -294,7 +296,7 @@ function viewShop() {
     ${boughtCount ? `<div class="bought ${ui.boughtOpen ? 'open' : ''}"><button class="bought-head" data-action="toggle" data-key="boughtOpen" aria-expanded="${!!ui.boughtOpen}">${icon('shopping_cart')}Eingekauft (${boughtCount})</button>
       ${ui.boughtOpen ? `<div class="list">${[
         ...g.boughtItems.map(i => [i.name, amountText({ amounts: g.s.bought[i.key] }), `data-action="unbuy" data-key="${esc(i.key)}"`]),
-        ...g.boughtExtras.map(x => [x.name, 'selbst dazugeschrieben', `data-action="unbuy-extra" data-id="${x.id}"`]),
+        ...g.boughtExtras.map(x => [x.name, x.basic ? 'Basic' : 'selbst dazugeschrieben', `data-action="unbuy-extra" data-id="${x.id}"`]),
       ].map(([name, sub, attrs]) => `<div class="item have">
         <span class="item-main">${icon('check')}<span class="item-text"><b>${esc(name)}</b><small>${esc(sub)}</small></span></span>
         <button class="item-side ghost" ${attrs}>Zurückholen</button>
@@ -322,7 +324,7 @@ function extraRow(x) {
   return `<div class="item ${x.done ? 'done' : ''}">
     <button class="item-main" data-action="extra-done" data-id="${x.id}" aria-pressed="${!!x.done}">
       <span class="ms tick" aria-hidden="true">${x.done ? 'check_circle' : 'radio_button_unchecked'}</span>
-      <span class="item-text"><b>${esc(x.name)}</b><small>selbst dazugeschrieben</small></span>
+      <span class="item-text"><b>${esc(x.name)}</b><small>${x.basic ? 'Basic' : 'selbst dazugeschrieben'}</small></span>
     </button>
     ${!x.done && currentStore() ? missingBtn(keyOf(x.name)) : ''}
     <button class="icon-btn" data-action="extra-remove" data-id="${x.id}" aria-label="Entfernen">${icon('close')}</button>
@@ -340,6 +342,14 @@ function storeBar(open) {
   return `<div class="store-bar"><small class="muted">Einkaufen bei</small>
     <div class="chips">${stores.map(chip).join('')}
       <button class="chip ghost" data-action="stores">${icon(stores.length ? 'edit' : 'add')}${stores.length ? 'Märkte' : 'Supermarkt anlegen'}</button></div></div>`;
+}
+
+// Knopf „Basics prüfen“ über der Liste
+function basicsButton() {
+  const n = (data.basics ?? []).length;
+  return `<button class="summary basics-btn" data-action="basics">${icon('checklist')}
+    <span><b>Basics prüfen</b><small>${n ? `${plural(n, 'Sache', 'Sachen')}, die du regelmäßig kaufst` : 'Was du bei fast jedem Einkauf brauchst'}</small></span>
+    ${icon('chevron_right')}</button>`;
 }
 
 const extraForm = () => `<form class="inline-form" data-form="extra">
@@ -461,7 +471,7 @@ function viewFind() {
 
 function viewSheet() {
   const s = ui.sheet;
-  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores }[s.type]();
+  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics }[s.type]();
   return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
@@ -629,6 +639,41 @@ function sheetStores() {
         <input id="store-input" name="store" placeholder="Neuer Markt, z. B. Rewe" autocomplete="off" enterkeyhint="done">
         <button class="icon-btn filled" aria-label="Markt anlegen">${icon('add')}</button>
       </form>`,
+  };
+}
+
+// Basics prüfen: alle Basics nach Bereichen, antippen was fehlt, dann auf die Liste. Was schon draufsteht, ist ausgegraut.
+const BASIC_IDEAS = ['Milch', 'Brot', 'Eier', 'Butter', 'Käse', 'Joghurt', 'Bananen', 'Äpfel', 'Müsli', 'Kaffee', 'Wasser',
+  'Toilettenpapier', 'Küchenrolle', 'Spülmittel'];
+function sheetBasics() {
+  const basics = data.basics ?? [];
+  const g = shopGroups(ui.week);
+  const onList = new Set([...g.buy, ...g.extras].map(x => keyOf(x.name)));
+  const ideas = BASIC_IDEAS.filter(n => !basics.some(b => keyOf(b.name) === keyOf(n)));
+  const picked = ui.basicsPick.length;
+  const groups = groupByCategory(basics, b => b.name, data.categories).map(sec => `<h4>${esc(sec.name)}</h4>
+    <div class="chips">${sec.items.map(b => {
+      const key = keyOf(b.name);
+      if (ui.basicsEdit) return `<button class="chip" data-action="basic-remove" data-id="${b.id}">${esc(b.name)}${icon('close')}</button>`;
+      if (onList.has(key)) return `<span class="chip off">${icon('check')}${esc(b.name)}<small>steht drauf</small></span>`;
+      const on = ui.basicsPick.includes(b.id);
+      return `<button class="chip ${on ? 'on' : ''}" data-action="basic-pick" data-id="${b.id}" aria-pressed="${on}">${icon(on ? 'add_shopping_cart' : 'add')}${esc(b.name)}</button>`;
+    }).join('')}</div>`).join('');
+  return {
+    title: 'Basics prüfen',
+    body: `${basics.length && !ui.basicsEdit ? `<p class="muted">Schau kurz nach, was zu Hause fehlt, und tipp es an.</p>` : ''}
+      ${!basics.length ? `<p class="muted">Basics sind Sachen, die du bei fast jedem Einkauf brauchst. Du trägst sie einmal ein und prüfst sie vor dem Einkauf mit einem Blick.</p>` : ''}
+      ${groups}
+      ${ui.basicsEdit || !basics.length ? `<form class="inline-form" data-form="basic">
+          <input id="basic-input" name="basic" placeholder="Neues Basic, z. B. Milch" autocomplete="off" enterkeyhint="done">
+          <button class="icon-btn filled" aria-label="Basic hinzufügen">${icon('add')}</button>
+        </form>
+        ${ideas.length ? `<p class="small muted">Vorschläge:</p>
+          <div class="chips">${ideas.map(n => `<button class="chip ghost" data-action="basic-idea" data-name="${esc(n)}">${icon('add')}${esc(n)}</button>`).join('')}</div>` : ''}` : ''}
+      <div class="btn-row">
+        ${basics.length && !ui.basicsEdit ? `<button class="btn primary" data-action="basics-add" ${picked ? '' : 'disabled'}>${icon('add_shopping_cart')}${picked ? `${plural(picked, 'Sache', 'Sachen')} auf die Liste` : 'Auf die Liste'}</button>` : ''}
+        ${basics.length ? `<button class="btn ghost" data-action="toggle" data-key="basicsEdit">${icon(ui.basicsEdit ? 'check' : 'edit')}${ui.basicsEdit ? 'Fertig' : 'Basics bearbeiten'}</button>` : ''}
+      </div>`,
   };
 }
 
@@ -913,6 +958,24 @@ const actions = {
   'extra-remove': el => { const s = shopState(ui.week); s.extra = s.extra.filter(y => y.id !== el.dataset.id); commit(); },
   share: shareList,
   cats: () => { openSheet({ type: 'cats' }); render(); },
+  // Ohne Basics öffnet das Fenster gleich zum Anlegen
+  basics: () => { ui.basicsPick = []; ui.basicsEdit = !(data.basics ?? []).length; openSheet({ type: 'basics' }); render(); },
+  'basic-pick': el => {
+    const id = el.dataset.id;
+    ui.basicsPick = ui.basicsPick.includes(id) ? ui.basicsPick.filter(x => x !== id) : [...ui.basicsPick, id];
+    render();
+  },
+  'basics-add': () => {
+    const s = shopState(ui.week, true);
+    const names = data.basics.filter(b => ui.basicsPick.includes(b.id)).map(b => b.name);
+    for (const name of names) s.extra.push({ id: uid(), name, done: false, basic: true });
+    ui.basicsPick = [];
+    ui.sheet = null;
+    toast(`${plural(names.length, 'Sache', 'Sachen')} auf die Einkaufsliste gesetzt`);
+    commit();
+  },
+  'basic-idea': el => { addBasic(el.dataset.name); commit(); },
+  'basic-remove': el => { data.basics = data.basics.filter(b => b.id !== el.dataset.id); commit(); },
   'shop-finish': () => {
     const g = shopGroups(ui.week);
     let n = 0;
@@ -1012,6 +1075,13 @@ const actions = {
   'home-focus': el => { ui.findFocus = ui.findFocus === el.dataset.key ? null : el.dataset.key; render(); },
 };
 
+function addBasic(text) {
+  data.basics ??= [];
+  for (const name of String(text).split(',').map(t => t.trim()).filter(Boolean)) {
+    if (!data.basics.some(b => keyOf(b.name) === keyOf(name))) data.basics.push({ id: uid(), name });
+  }
+}
+
 function addHave(text) {
   for (const name of String(text).split(',').map(t => t.trim()).filter(Boolean)) {
     data.home ??= [];
@@ -1020,6 +1090,11 @@ function addHave(text) {
 }
 
 const forms = {
+  basic: form => {
+    addBasic(form.basic.value);
+    ui.focus = 'basic-input';
+    commit();
+  },
   store: form => {
     const name = form.store.value.trim();
     if (!name) return;

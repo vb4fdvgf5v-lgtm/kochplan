@@ -193,7 +193,7 @@ export const CATEGORIES = [
     'hüttenkäse', 'frischkäse', 'reibekäse', 'parmesan', 'feta', 'mozzarella', 'gouda', 'butter', 'ei', 'eier', 'schmand',
     'crème fraîche', 'creme fraiche', 'tofu', 'halloumi']],
   ['trocken', 'Nudeln, Reis & Getreide', ['nudel', 'spaghetti', 'vollkornspaghetti', 'bandnudeln', 'penne', 'fusilli', 'mie-nudel',
-    'reis', 'quinoa', 'bulgur', 'couscous', 'linsen', 'rote linsen', 'haferflocken', 'mehl', 'lasagne', 'gnocchi']],
+    'reis', 'quinoa', 'bulgur', 'couscous', 'linsen', 'rote linsen', 'haferflocken', 'mehl', 'lasagne', 'gnocchi', 'müsli', 'cornflakes']],
   ['konserven', 'Konserven & Gläser', ['dose', 'kichererbsen', 'kidneybohnen', 'weiße bohnen', 'bohnen', 'gehackte tomaten',
     'passierte tomaten', 'tomatenmark', 'oliven', 'pesto', 'mais', 'kokosmilch', 'erdnussmus', 'nussmus', 'honig', 'marmelade']],
   ['gewuerze', 'Gewürze, Öl & Soßen', ['salz', 'pfeffer', 'öl', 'olivenöl', 'essig', 'senf', 'ketchup', 'sojasoße', 'currypaste',
@@ -201,6 +201,9 @@ export const CATEGORIES = [
     'gemüsebrühe', 'brühe', 'sesam', 'zucker', 'backpulver', 'sauce', 'soße']],
   ['tk', 'Tiefkühl', ['tk', 'tiefkühl', 'gefroren', 'edamame']],
   ['getraenke', 'Getränke', ['wasser', 'saft', 'wein', 'bier', 'kaffee', 'tee', 'limo']],
+  ['haushalt', 'Drogerie & Haushalt', ['toilettenpapier', 'klopapier', 'küchenrolle', 'spülmittel', 'spülmaschinentabs', 'tabs',
+    'waschmittel', 'zahnpasta', 'zahnbürste', 'duschgel', 'shampoo', 'seife', 'deo', 'müllbeutel', 'taschentücher', 'schwamm',
+    'putzmittel', 'alufolie', 'frischhaltefolie', 'backpapier']],
   ['sonst', 'Sonstiges', []],
 ];
 export const CATEGORY_NAMES = Object.fromEntries(CATEGORIES.map(([id, name]) => [id, name]));

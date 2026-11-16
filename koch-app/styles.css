@@ -395,3 +395,10 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
 .fit { display: block; height: 4px; border-radius: 4px; background: var(--line); margin: 6px 0 4px; max-width: 160px; overflow: hidden; }
 .fit i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
 .complete .fit i { background: var(--green); }
+
+/* Basics */
+.basics-btn { width: 100%; margin: 4px 0 10px; text-align: left; }
+.basics-btn > span { flex: 1; display: grid; }
+.basics-btn small { color: var(--muted); }
+.chip.off { opacity: .55; }
+.chip.off small { font-size: 12px; color: var(--muted); }

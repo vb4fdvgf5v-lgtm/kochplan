@@ -4,6 +4,10 @@ import { addDays } from './logic.js';
 export const DEFAULT_STAPLES = ['salz', 'pfeffer', 'öl', 'olivenöl', 'zucker', 'mehl', 'essig', 'gemüsebrühe',
   'paprikapulver', 'oregano', 'currypulver', 'senf'];
 
+// Basics für den Start: was Matthes bei fast jedem Einkauf braucht. Weitere trägt er in der App selbst ein.
+export const DEFAULT_BASICS = ['Skyr', 'Brot', 'Eier', 'Griechischer Joghurt', 'Joghurt', 'Bananen']
+  .map(name => ({ id: `basic-${name.toLowerCase().replace(/\s+/g, '-')}`, name }));
+
 const ing = (amount, unit, name) => ({ amount, unit, name });
 
 // Beispielgerichte für den Start und den Demo-Modus. Absichtlich mit gemeinsamen Zutaten (Hack, Paprika, Zwiebel).
