@@ -182,3 +182,19 @@ test('Wochenvorschlag mischt Eiweißquellen und meidet gerade Gekochtes', async 
   const again = suggestWeek(dishes, 2, { ...opts, fixed: [dishes[0]], skip: ['r1'] }).map(x => x.id);
   assert.ok(!again.includes('h1') && !again.includes('r1'));
 });
+
+test('Kochmodus: Schritte, Timer und Zutaten je Schritt', async () => {
+  const { cookSteps, stepMinutes, ingredientsInStep } = await import('../js/logic.js');
+  const { steps, info } = cookSteps('1. Reis kochen.\n2. Hähnchen in Öl 4–5 Minuten braten.\n\nPro Portion ca. 520 kcal · 42 g Eiweiß');
+  assert.deepEqual(steps, ['Reis kochen.', 'Hähnchen in Öl 4–5 Minuten braten.']);
+  assert.deepEqual(info, ['Pro Portion ca. 520 kcal · 42 g Eiweiß']);
+  assert.equal(stepMinutes(steps[1]), 5);
+  assert.equal(stepMinutes('zugedeckt 12 Min. köcheln'), 12);
+  assert.equal(stepMinutes('Reis kochen.'), null);
+  const ings = [{ name: 'Hähnchenbrust' }, { name: 'Reis' }, { name: 'Paprika' }];
+  assert.deepEqual(ingredientsInStep(steps[1], ings).map(i => i.name), ['Hähnchenbrust']);
+  assert.deepEqual(ingredientsInStep(steps[0], ings).map(i => i.name), ['Reis']);
+  const more = [{ name: 'Putenbrust' }, { name: 'Cherrytomaten' }, { name: 'Rote Currypaste' }, { name: 'Rote Zwiebel' }, { name: 'Öl' }];
+  assert.deepEqual(ingredientsInStep('Pute in Streifen schneiden und in Öl anbraten', more).map(i => i.name), ['Putenbrust', 'Öl']);
+  assert.deepEqual(ingredientsInStep('Tomaten halbieren, Zwiebel in Spalten', more).map(i => i.name), ['Cherrytomaten', 'Rote Zwiebel']);
+});

@@ -5,7 +5,7 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
 
 ## Stand (11.11.2026)
 
-- **Version 0.15.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
+- **Version 0.16.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
 - 0.2: Gerichte gehören zur **Woche**, ein Tag ist optional (Matthes' Wunsch: „Diese Woche koche ich das und das“).
   Daten: `weeks[montag] = [{ id, dishId, servings, day|null }]`; 0.1-Daten (`plan[datum]`) werden beim Laden umgestellt.
 - 0.3: **Rezept aus Foto-Text** (Gerichte → Einfügen). Text per iPhone-Livetext kopieren, einfügen, `js/import.js`
@@ -48,6 +48,10 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
   gekocht, < 7 Tage Abzug, Sterne, gemeinsame Zutaten, Abzug für wiederholte Eiweißquelle, etwas Zufall). Anzahl 1–7,
   einzeln tauschen (`skip`), „Alle neu“, Gericht ansehen und per × zurück (`ui.sheetBack`), „N Gerichte übernehmen“.
   Datensicherungs-Erinnerung hat Matthes bewusst abgelehnt.
+- 0.16: **Kochmodus** („Jetzt kochen“ beim Gericht und Wochen-Eintrag, Vollbild): Zutaten bereitlegen und abhaken, dann ein
+  Schritt pro Seite (`cookSteps` aus den Notizen, Nährwertzeile als Info), Zutaten je Schritt (`ingredientsInStep`, Wortanfang/-ende,
+  Stoppwörter wie „rote“), Timer aus „N Minuten“ (`stepMinutes`, läuft über Schritte weiter, piept per WebAudio), Wake Lock
+  gegen Bildschirm-Aus, „Fertig gekocht“ → `markCooked` → „Wie war's?“. Wake Lock nur auf dem iPhone prüfbar.
 - Matthes nutzt sie vorerst **allein**, deshalb kein Supabase: Daten liegen in `localStorage` (`koch:data`),
   Sicherung als JSON-Datei über „Daten sichern“.
 - Kein KI-Dialog gewünscht. Die App soll die Antworten über gute Ansichten liefern.

@@ -1,4 +1,4 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, stepAmount, DISH_FILTERS, filterDishes, suggestWeek, proteinsOf, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, stepAmount, DISH_FILTERS, filterDishes, suggestWeek, proteinsOf, cookSteps, stepMinutes, ingredientsInStep, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked, daysBetween } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, DEFAULT_BASICS, demoWeeks } from './seed.js';
 import { parseRecipeText, parseIngredientLine, SAMPLE_RECIPE_TEXT } from './import.js';
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.15';
+const APP_VERSION = '0.16';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -20,6 +20,7 @@ const today = () => iso(new Date());
 const ui = {
   view: NAV.some(([v]) => v === params.get('view')) ? params.get('view') : 'week',
   week: mondayOf(today()),
+  timer: null, // Kochmodus-Timer { end, label, done }
   sheet: null, // { type: 'entry' | 'pick' | 'dish' | 'edit' | 'paste' | 'pantry', ... }
   dishSearch: '', dishSort: 'name', dishFilters: [], boughtOpen: false, pickSearch: '', pickFast: false, findFast: false,
   pasteText: '', // Rezepttext zum Erkennen
@@ -538,8 +539,8 @@ function viewFind() {
 
 function viewSheet() {
   const s = ui.sheet;
-  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics, filters: sheetFilters, suggest: sheetSuggest }[s.type]();
-  return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''} ${['basics', 'rate', 'suggest'].includes(s.type) ? 'full' : ''}" data-action="backdrop">
+  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics, filters: sheetFilters, suggest: sheetSuggest, cook: sheetCook }[s.type]();
+  return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''} ${['basics', 'rate', 'suggest', 'cook'].includes(s.type) ? 'full' : ''} ${s.type === 'cook' ? 'cook' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
         <button class="icon-btn" data-action="close" aria-label="Schließen">${icon('close')}</button></header>
@@ -792,6 +793,52 @@ function sheetSuggest() {
   };
 }
 
+// Kochmodus: erst Zutaten bereitlegen (abhaken), dann ein Schritt pro Seite in großer Schrift,
+// mit Zutaten des Schritts und Timer, wenn der Schritt eine Zeit nennt. Am Ende „Fertig gekocht“.
+function sheetCook() {
+  const sh = ui.sheet;
+  const dish = dishById(sh.id);
+  const { steps, info } = cookSteps(dish.notes);
+  const factor = (sh.servings || 1) / (dish.servings || 1);
+  const amount = i => i.amount ? fmtAmount(i.amount * factor, i.unit) : '';
+  const total = steps.length;
+  const timer = ui.timer ? `<div class="cook-timer ${ui.timer.done ? 'done' : ''}">${icon('timer')}
+      <span><small>${esc(ui.timer.label)}</small><b id="cook-timer-clock" class="num">${ui.timer.done ? 'Fertig!' : fmtClock(ui.timer.end - Date.now())}</b></span>
+      <button class="btn small ghost" data-action="cook-timer-stop">${ui.timer.done ? 'OK' : 'Stopp'}</button></div>` : '';
+  const progress = `<div class="cook-progress">${[-1, ...steps.keys()].map(n => `<i class="${n <= sh.step ? 'on' : ''}"></i>`).join('')}</div>`;
+  let body;
+  if (sh.step < 0) {
+    body = `<p class="cook-kicker">Bereitlegen · ${plural(sh.servings, 'Portion', 'Portionen')}</p>
+      ${nextTimeNote(dish)}
+      <div class="cook-ings">${dish.ingredients.map((i, n) => {
+        const on = sh.ticked.includes(n);
+        return `<button class="cook-ing ${on ? 'on' : ''}" data-action="cook-tick" data-i="${n}" aria-pressed="${on}">
+          ${icon(on ? 'check_circle' : 'radio_button_unchecked')}<span>${esc(i.name)}</span><b class="num">${esc(amount(i))}</b></button>`;
+      }).join('')}</div>`;
+  } else if (sh.step < total) {
+    const text = steps[sh.step];
+    const mins = stepMinutes(text);
+    const used = ingredientsInStep(text, dish.ingredients);
+    body = `<p class="cook-kicker">Schritt ${sh.step + 1} von ${total}</p>
+      <p class="cook-step">${esc(text)}</p>
+      ${used.length ? `<div class="cook-used">${used.map(i => `<span>${esc(i.name)}${amount(i) ? ` <b>${esc(amount(i))}</b>` : ''}</span>`).join('')}</div>` : ''}
+      ${mins && !ui.timer ? `<button class="btn cook-timer-btn" data-action="cook-timer" data-min="${mins}" data-label="Schritt ${sh.step + 1}">${icon('timer')}Timer ${mins} Min. starten</button>` : ''}`;
+  } else {
+    body = `<div class="cook-done">${icon('celebration')}<p class="cook-step">Guten Appetit!</p>
+      ${info.length ? `<p class="muted">${esc(info.join(' · '))}</p>` : ''}</div>`;
+  }
+  const last = sh.step >= total;
+  return {
+    title: dish.name,
+    body: `${progress}${timer}<div class="cook-body">${body}</div>
+      <div class="btn-row sheet-actions cook-nav">
+        <button class="btn" data-action="cook-step" data-dir="-1" ${sh.step < 0 ? 'disabled' : ''}>${icon('chevron_left')}Zurück</button>
+        ${last ? `<button class="btn primary" data-action="cook-finish">${icon('check_circle')}Fertig gekocht</button>`
+          : `<button class="btn primary" data-action="cook-step" data-dir="1">${sh.step < 0 ? 'Los geht\'s' : sh.step === total - 1 ? 'Fertig' : 'Weiter'}${icon('chevron_right')}</button>`}
+      </div>`,
+  };
+}
+
 function sheetRate() {
   const dish = dishById(ui.sheet.id);
   const first = (dish.cooked ?? []).length <= 1 && !isRated(dish);
@@ -831,7 +878,9 @@ const nextTimeNote = dish => dish.nextTime?.trim()
 
 // Großer Knopf „Gerade gekocht“, danach die Bestätigung mit Rückgängig
 function cookedBlock(cookedOn) {
-  if (!cookedOn) return `<button class="btn primary wide" data-action="cooked">${icon('check_circle')}Gerade gekocht</button>`;
+  if (!cookedOn) return `<div class="cook-actions">
+    <button class="btn primary" data-action="cook-start">${icon('skillet')}Jetzt kochen</button>
+    <button class="btn" data-action="cooked">${icon('check_circle')}Gerade gekocht</button></div>`;
   return `<div class="cooked-note">${icon('check_circle')}<span>${cookedText(cookedOn)}</span>
     <button class="btn small ghost" data-action="uncook">Rückgängig</button></div>`;
 }
@@ -1011,12 +1060,72 @@ function rememberHas(key) {
   delete st.missing?.[key];
 }
 
+// Als gekocht speichern und gleich fragen, wie es war (bewerten, Zutaten anpassen, Notiz)
+function markCooked(dish, entry) {
+  const t = today();
+  dish.cooked = [...(dish.cooked ?? []), t];
+  if (entry) entry.cooked = t;
+  toast('Als gekocht gespeichert');
+  openSheet({ type: 'rate', id: dish.id });
+  commit();
+}
+
+// Bildschirm beim Kochen anlassen (Wake Lock, auf neueren iPhones auch in der Home-Bildschirm-App)
+let wakeLock = null;
+async function keepScreenOn(on) {
+  try {
+    if (on && 'wakeLock' in navigator && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener?.('release', () => { wakeLock = null; });
+    } else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch { wakeLock = null; }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && ui.sheet?.type === 'cook') keepScreenOn(true); });
+
+// Timer im Kochmodus: läuft weiter, auch wenn man den Schritt wechselt; am Ende Ton und Hinweis
+let timerTick = null;
+function startTimer(minutes, label) {
+  stopTimer();
+  ui.timer = { end: Date.now() + minutes * 60000, label, done: false };
+  timerTick = setInterval(updateTimer, 500);
+}
+function stopTimer() { clearInterval(timerTick); timerTick = null; ui.timer = null; }
+const fmtClock = ms => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+function updateTimer() {
+  const t = ui.timer;
+  if (!t) return;
+  const left = t.end - Date.now();
+  const el = document.getElementById('cook-timer-clock');
+  if (el) el.textContent = fmtClock(left);
+  if (left <= 0 && !t.done) {
+    t.done = true;
+    clearInterval(timerTick);
+    beep();
+    toast(`Timer fertig: ${t.label}`);
+    render();
+  }
+}
+function beep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.35, 0.7].forEach(at => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.25, ctx.currentTime + at); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + at + 0.3);
+      o.start(ctx.currentTime + at); o.stop(ctx.currentTime + at + 0.3);
+    });
+  } catch { /* ohne Ton */ }
+}
+
 const actions = {
   go: el => { ui.view = el.dataset.view; ui.sheet = null; render(); scrollTo(0, 0); },
   week: el => { ui.week = addDays(ui.week, 7 * Number(el.dataset.dir)); render(); },
   'week-today': () => { ui.week = mondayOf(today()); render(); },
   // Aus dem Vorschlag ins Gericht geschaut: Schließen führt zurück zum Vorschlag
-  close: () => { ui.sheet = ui.sheet?.type === 'dish' && ui.sheetBack ? ui.sheetBack : null; ui.sheetBack = null; render(); },
+  close: () => {
+    if (ui.sheet?.type === 'cook') { keepScreenOn(false); stopTimer(); }
+    ui.sheet = ui.sheet?.type === 'dish' && ui.sheetBack ? ui.sheetBack : null; ui.sheetBack = null; render();
+  },
   backdrop: (el, e) => { if (e.target === el) actions.close(); },
   toggle: el => { ui[el.dataset.key] = !ui[el.dataset.key]; render(); },
 
@@ -1024,17 +1133,35 @@ const actions = {
   pick: () => { ui.pickSearch = ''; openSheet({ type: 'pick', week: ui.week }); render(); },
   'pick-toggle': el => { toggleInWeek(ui.sheet.week, dishById(el.dataset.id)); commit(); },
   cooked: () => {
-    const t = today();
     // Aus dem Plan: diesen Eintrag. Aus den Gerichten: den noch offenen Eintrag dieser Woche, falls es einen gibt.
     const entry = ui.sheet.type === 'entry' ? entryById(ui.sheet.week, ui.sheet.id)
-      : weekEntries(mondayOf(t)).find(e => e.dishId === ui.sheet.id && !e.cooked);
+      : weekEntries(mondayOf(today())).find(e => e.dishId === ui.sheet.id && !e.cooked);
+    markCooked(dishById(entry?.dishId ?? ui.sheet.id), entry);
+  },
+  // Kochmodus: aus dem Wochen-Eintrag mit dessen Portionen, sonst mit den Portionen des Rezepts
+  'cook-start': () => {
+    const entry = ui.sheet.type === 'entry' ? entryById(ui.sheet.week, ui.sheet.id) : null;
     const dish = dishById(entry?.dishId ?? ui.sheet.id);
-    dish.cooked = [...(dish.cooked ?? []), t];
-    if (entry) entry.cooked = t;
-    toast('Als gekocht gespeichert');
-    // Gleich fragen, wie es war (bewerten, Zutaten anpassen, Notiz)
-    openSheet({ type: 'rate', id: dish.id });
-    commit();
+    openSheet({ type: 'cook', id: dish.id, week: ui.sheet.week, entryId: entry?.id ?? null,
+      servings: entry?.servings ?? dish.servings ?? 2, step: -1, ticked: [] });
+    keepScreenOn(true);
+    render();
+  },
+  'cook-step': el => { ui.sheet.step += Number(el.dataset.dir); render(); document.querySelector('.sheet-body')?.scrollTo(0, 0); },
+  'cook-tick': el => {
+    const i = Number(el.dataset.i), t = ui.sheet.ticked;
+    ui.sheet.ticked = t.includes(i) ? t.filter(x => x !== i) : [...t, i];
+    render();
+  },
+  'cook-timer': el => { startTimer(Number(el.dataset.min), el.dataset.label); render(); },
+  'cook-timer-stop': () => { stopTimer(); render(); },
+  'cook-finish': () => {
+    const sh = ui.sheet;
+    const entry = sh.entryId ? entryById(sh.week, sh.entryId)
+      : weekEntries(mondayOf(today())).find(e => e.dishId === sh.id && !e.cooked);
+    keepScreenOn(false);
+    stopTimer();
+    markCooked(dishById(sh.id), entry);
   },
   'adjust-dish': () => { openSheet({ type: 'rate', id: ui.sheet.id, adjust: true }); render(); },
   'adj-step': el => {

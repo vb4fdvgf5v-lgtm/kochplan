@@ -314,3 +314,36 @@ export function suggestWeek(dishes, count, { fixed = [], skip = [], ...opts } = 
   }
   return picked;
 }
+
+// ---------- Kochmodus ----------
+// Notizen in Arbeitsschritte zerlegen: Nummerierung weg, Nährwertzeile („Pro Portion …“) getrennt als Info.
+export function cookSteps(notes = '') {
+  const steps = [], info = [];
+  for (const raw of String(notes).split(/\r?\n/)) {
+    const line = raw.replace(/^\s*(\d+[.)]|[-•*])\s*/, '').trim();
+    if (!line) continue;
+    if (/^pro portion|kcal|eiweiß\b/i.test(line) && line.length < 80) info.push(line); else steps.push(line);
+  }
+  return { steps, info };
+}
+
+// Zeit im Schritt für einen Timer: „8 Minuten“, „4–5 Min.“ (größere Zahl), „1 Stunde“. Sonst null.
+export function stepMinutes(text) {
+  const m = String(text).match(/(\d+)(?:\s*[-–]\s*(\d+))?\s*(minuten|minute|min\b|min\.|std|stunden?)/i);
+  if (!m) return null;
+  const n = Number(m[2] ?? m[1]);
+  return /std|stunde/i.test(m[3]) ? n * 60 : n;
+}
+
+// Zutaten, die im Schritt vorkommen: ein Wort im Text ist Anfang oder Ende eines Zutatenworts
+// („Pute“ → Putenbrust, „Tomaten“ → Cherrytomaten). Farb- und Zustandswörter wie „rote“ zählen nicht.
+const STEP_STOP = new Set(['rote', 'roter', 'grüne', 'weiße', 'light', 'frische', 'gehackte', 'passierte', 'stück']);
+const wordsOf = text => keyOf(text).split(/[^a-zäöüß]+/).filter(w => w.length >= 2);
+export function ingredientsInStep(text, ingredients = []) {
+  const words = wordsOf(text).filter(w => w.length >= 4 || w === 'öl' || w === 'ei');
+  return ingredients.filter(i => {
+    const parts = wordsOf(i.name).filter(w => !STEP_STOP.has(w));
+    if (!parts.length && keyOf(i.name).length >= 2) parts.push(keyOf(i.name));
+    return parts.some(p => words.some(w => p === w || p.startsWith(w) || w.startsWith(p) || (w.length >= 5 && p.endsWith(w))));
+  });
+}
