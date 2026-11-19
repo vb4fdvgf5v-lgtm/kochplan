@@ -1,4 +1,4 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, stepAmount, DISH_FILTERS, filterDishes, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, stepAmount, DISH_FILTERS, filterDishes, suggestWeek, proteinsOf, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked, daysBetween } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, DEFAULT_BASICS, demoWeeks } from './seed.js';
 import { parseRecipeText, parseIngredientLine, SAMPLE_RECIPE_TEXT } from './import.js';
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.14';
+const APP_VERSION = '0.15';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -217,7 +217,9 @@ function viewWeek() {
     ${weekNav()}
     ${lead}
     ${sorted.length ? `<div class="days">${sorted.map(entryCard).join('')}</div>` : ''}
-    ${data.dishes.length ? `<button class="add-row" data-action="pick">${icon('add')}${entries.length ? 'Weiteres Gericht' : 'Gerichte für die Woche wählen'}</button>` : ''}`;
+    ${data.dishes.length > 1 ? `<button class="suggest-btn" data-action="suggest">${icon('auto_awesome')}<span><b>Woche vorschlagen</b>
+      <small>Abwechslungsreich, lange nicht gekocht, passt zusammen</small></span>${icon('chevron_right')}</button>` : ''}
+    ${data.dishes.length ? `<button class="add-row" data-action="pick">${icon('add')}${entries.length ? 'Weiteres Gericht' : 'Gerichte selbst wählen'}</button>` : ''}`;
 }
 
 function entryCard(entry) {
@@ -536,8 +538,8 @@ function viewFind() {
 
 function viewSheet() {
   const s = ui.sheet;
-  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics, filters: sheetFilters }[s.type]();
-  return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''} ${['basics', 'rate'].includes(s.type) ? 'full' : ''}" data-action="backdrop">
+  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics, filters: sheetFilters, suggest: sheetSuggest }[s.type]();
+  return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''} ${['basics', 'rate', 'suggest'].includes(s.type) ? 'full' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
         <button class="icon-btn" data-action="close" aria-label="Schließen">${icon('close')}</button></header>
@@ -747,6 +749,49 @@ function sheetBasics() {
 
 // „Wie war's?“ nach jedem Kochen, auch beim Gericht über „Schnell anpassen“: Sterne, Zutaten mit − / + / ×, Notiz.
 // Alles wird sofort gespeichert, „Fertig“ schließt nur.
+// Wochenvorschlag: N Gerichte, jedes einzeln tauschbar, dann alle auf einmal in die Woche
+const PROTEIN_LABEL = { gefluegel: 'Geflügel', rind: 'Rind & Hack', fisch: 'Fisch', veggie: 'Veggie' };
+const suggestOpts = () => ({ cookedAgo, staples: data.staples, custom: data.categories });
+function fillSuggestion(sh) {
+  const fixed = weekEntries(sh.week).map(e => dishById(e.dishId));
+  const keep = sh.ids.slice(0, sh.count).map(dishById).filter(Boolean);
+  const more = suggestWeek(data.dishes, sh.count - keep.length, { ...suggestOpts(), fixed: [...fixed, ...keep], skip: sh.skip });
+  sh.ids = [...keep, ...more].map(d => d.id);
+}
+function sheetSuggest() {
+  const sh = ui.sheet;
+  const fixed = weekEntries(sh.week).map(e => dishById(e.dishId));
+  const dishes = sh.ids.map(dishById).filter(Boolean);
+  const cards = dishes.map((d, i) => {
+    const others = [...fixed, ...dishes.filter(o => o !== d)];
+    const shared = sharedWith(d, others, data.staples);
+    const groups = [...proteinsOf(d, data.categories)].map(g => PROTEIN_LABEL[g]).join(', ');
+    const meta = [d.minutes && `${d.minutes} Min.`, groups, ago(cookedAgo(d)), d.rating?.taste && `★ ${d.rating.taste}`].filter(Boolean);
+    return `<div class="suggest-card">
+      <button class="suggest-main" data-action="dish-peek" data-id="${d.id}">
+        <b>${esc(d.name)}</b><small>${esc(meta.join(' · '))}</small>
+        ${shared.length ? `<small class="hits">${icon('swap_horiz')}teilt ${esc(shared.slice(0, 3).join(', '))}</small>` : ''}
+      </button>
+      <button class="icon-btn" data-action="suggest-swap" data-i="${i}" aria-label="${esc(d.name)} tauschen">${icon('autorenew')}</button>
+    </div>`;
+  }).join('');
+  return {
+    title: 'Woche vorschlagen',
+    body: `<p class="muted">${fixed.length ? `Zu den ${plural(fixed.length, 'geplanten Gericht', 'geplanten Gerichten')} dazu. ` : ''}Gefällt dir eins nicht, tausch es aus.</p>
+      <div class="stepper">
+        <span>Anzahl Gerichte</span>
+        <button class="icon-btn" data-action="suggest-count" data-delta="-1" aria-label="Weniger" ${sh.count <= 1 ? 'disabled' : ''}>${icon('remove')}</button>
+        <b class="num">${sh.count}</b>
+        <button class="icon-btn" data-action="suggest-count" data-delta="1" aria-label="Mehr" ${sh.count >= 7 ? 'disabled' : ''}>${icon('add')}</button>
+      </div>
+      <div class="suggest-list">${cards || '<p class="muted center pad">Keine weiteren Gerichte übrig.</p>'}</div>
+      <button class="btn ghost" data-action="suggest-all">${icon('autorenew')}Alle neu vorschlagen</button>
+      <div class="btn-row sheet-actions">
+        <button class="btn primary" data-action="suggest-apply" ${dishes.length ? '' : 'disabled'}>${icon('check')}${plural(dishes.length, 'Gericht', 'Gerichte')} übernehmen</button>
+      </div>`,
+  };
+}
+
 function sheetRate() {
   const dish = dishById(ui.sheet.id);
   const first = (dish.cooked ?? []).length <= 1 && !isRated(dish);
@@ -970,7 +1015,8 @@ const actions = {
   go: el => { ui.view = el.dataset.view; ui.sheet = null; render(); scrollTo(0, 0); },
   week: el => { ui.week = addDays(ui.week, 7 * Number(el.dataset.dir)); render(); },
   'week-today': () => { ui.week = mondayOf(today()); render(); },
-  close: () => { ui.sheet = null; render(); },
+  // Aus dem Vorschlag ins Gericht geschaut: Schließen führt zurück zum Vorschlag
+  close: () => { ui.sheet = ui.sheet?.type === 'dish' && ui.sheetBack ? ui.sheetBack : null; ui.sheetBack = null; render(); },
   backdrop: (el, e) => { if (e.target === el) actions.close(); },
   toggle: el => { ui[el.dataset.key] = !ui[el.dataset.key]; render(); },
 
@@ -1015,6 +1061,34 @@ const actions = {
   'dish-filter-reset': () => { ui.dishFilters = []; render(); },
   'dish-protein-all': () => { ui.dishFilters = ui.dishFilters.filter(k => FILTER_ICONS[k]); render(); },
   filters: () => { openSheet({ type: 'filters' }); render(); },
+  suggest: () => {
+    const sh = { type: 'suggest', week: ui.week, count: 4, ids: [], skip: [] };
+    fillSuggestion(sh);
+    openSheet(sh);
+    render();
+  },
+  'suggest-swap': el => {
+    const sh = ui.sheet, i = Number(el.dataset.i);
+    sh.skip.push(sh.ids[i]);
+    const fixed = weekEntries(sh.week).map(e => dishById(e.dishId));
+    const others = sh.ids.filter((_, n) => n !== i).map(dishById);
+    let [next] = suggestWeek(data.dishes, 1, { ...suggestOpts(), fixed: [...fixed, ...others], skip: sh.skip });
+    // Alles einmal durch: Abgelehnte wieder zulassen
+    if (!next) { sh.skip = [sh.ids[i]]; [next] = suggestWeek(data.dishes, 1, { ...suggestOpts(), fixed: [...fixed, ...others], skip: sh.skip }); }
+    if (next) sh.ids[i] = next.id;
+    render();
+  },
+  'suggest-all': () => { const sh = ui.sheet; sh.skip.push(...sh.ids); sh.ids = []; fillSuggestion(sh); if (!sh.ids.length) { sh.skip = []; fillSuggestion(sh); } render(); },
+  'suggest-count': el => { const sh = ui.sheet; sh.count = Math.min(7, Math.max(1, sh.count + Number(el.dataset.delta))); fillSuggestion(sh); render(); },
+  'suggest-apply': () => {
+    const sh = ui.sheet;
+    for (const id of sh.ids) if (!inWeek(sh.week, id)) toggleInWeek(sh.week, dishById(id));
+    ui.sheet = null;
+    toast(`${plural(sh.ids.length, 'Gericht', 'Gerichte')} eingeplant`);
+    commit();
+  },
+  // Aus dem Vorschlag kurz ins Gericht schauen, „Zurück“ führt zum Vorschlag
+  'dish-peek': el => { ui.sheetBack = ui.sheet; openSheet({ type: 'dish', id: el.dataset.id }); render(); },
   uncook: () => {
     const entry = ui.sheet.type === 'entry' ? entryById(ui.sheet.week, ui.sheet.id)
       : weekEntries(mondayOf(today())).find(e => e.dishId === ui.sheet.id && e.cooked === today());

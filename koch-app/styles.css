@@ -474,3 +474,20 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
 .filter-tile.on .ms, .filter-tile.on small { color: var(--accent); }
 .filter-tile:disabled { opacity: .4; cursor: default; }
 .filter-actions { display: grid; grid-template-columns: auto 1fr; margin-top: 16px; }
+
+/* Wochenvorschlag */
+.suggest-btn { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 14px; border-radius: 16px; cursor: pointer;
+  text-align: left; color: var(--text); font: inherit;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); }
+.suggest-btn > .ms:first-child { font-size: 26px; color: var(--accent); }
+.suggest-btn > span:not(.ms) { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.suggest-btn small { color: var(--muted); font-size: 13px; }
+.suggest-list { display: grid; gap: 10px; }
+.suggest-card { display: flex; align-items: center; gap: 6px; padding: 4px 6px 4px 0; border-radius: 14px; background: var(--surface-2); }
+.suggest-main { flex: 1; min-width: 0; display: grid; gap: 3px; text-align: left; background: none; border: 0; padding: 12px 14px; cursor: pointer;
+  color: var(--text); font: inherit; }
+.suggest-main small { color: var(--muted); font-size: 13px; }
+.suggest-main .hits { color: var(--green); display: flex; align-items: center; gap: 4px; }
+.suggest-main .hits .ms { font-size: 15px; }
+.sheet-actions > .btn.primary:only-child { flex: 1; justify-content: center; }

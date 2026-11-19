@@ -165,3 +165,20 @@ test('Gerichte nach Eiweißquelle und Status filtern', async () => {
   assert.deepEqual(ids(['new'], { cookedAgo: d => d.id === 'h' ? 3 : null }), ['c', 'd', 'p']);
   assert.deepEqual(ids(['top']), ['d']);
 });
+
+test('Wochenvorschlag mischt Eiweißquellen und meidet gerade Gekochtes', async () => {
+  const { suggestWeek } = await import('../js/logic.js');
+  const ing = (...names) => names.map(name => ({ name, amount: 1, unit: 'Stück' }));
+  const d = (id, ...names) => ({ id, name: id, ingredients: ing(...names) });
+  const dishes = [d('h1', 'Hähnchenbrust', 'Reis'), d('h2', 'Hähnchenbrust', 'Paprika'), d('h3', 'Putenbrust', 'Reis'),
+    d('r1', 'Rinderhackfleisch', 'Paprika'), d('f1', 'Lachs', 'Reis'), d('v1', 'Rote Linsen', 'Möhre')];
+  const opts = { random: () => 0, cookedAgo: x => x.id === 'f1' ? 2 : null };
+  const ids = suggestWeek(dishes, 3, opts).map(x => x.id);
+  assert.equal(ids.length, 3);
+  assert.ok(!ids.includes('f1')); // vor zwei Tagen gekocht
+  const poultry = ids.filter(id => id.startsWith('h')).length;
+  assert.ok(poultry <= 1, `zu viel Geflügel: ${ids}`); // Mix statt dreimal Hähnchen
+  // abgelehnte und schon geplante Gerichte kommen nicht wieder
+  const again = suggestWeek(dishes, 2, { ...opts, fixed: [dishes[0]], skip: ['r1'] }).map(x => x.id);
+  assert.ok(!again.includes('h1') && !again.includes('r1'));
+});

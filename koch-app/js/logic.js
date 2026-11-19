@@ -286,3 +286,31 @@ export function filterDishes(dishes, active, { cookedAgo = () => null, custom = 
     return true;
   });
 }
+
+// ---------- Wochenvorschlag ----------
+// Wählt nacheinander das jeweils beste Gericht: lange nicht gekocht, gut bewertet, teilt Zutaten mit dem schon
+// Gewählten, aber möglichst andere Eiweißquelle. Ein wenig Zufall, damit „Neu vorschlagen“ etwas anderes bringt.
+export function scoreForWeek(dish, picked, { cookedAgo = () => null, staples = [], custom = {}, random = Math.random } = {}) {
+  const days = cookedAgo(dish);
+  let score = days == null ? 3 : days < 7 ? -3 : Math.min(days, 28) / 7;
+  score += ((dish.rating?.taste ?? 3) - 3) * 1;
+  score += Math.min(sharedWith(dish, picked, staples).length, 3) * 0.8;
+  const mine = proteinsOf(dish, custom);
+  const repeats = picked.filter(p => [...proteinsOf(p, custom)].some(g => mine.has(g))).length;
+  score -= repeats * 2.5;
+  return score + random() * 1.5;
+}
+
+// fixed: schon in der Woche, skip: abgelehnte IDs. Liefert die Gerichte in Vorschlagsreihenfolge.
+export function suggestWeek(dishes, count, { fixed = [], skip = [], ...opts } = {}) {
+  const picked = [];
+  const taken = new Set([...fixed.map(d => d.id), ...skip]);
+  for (let i = 0; i < count; i++) {
+    const pool = dishes.filter(d => !taken.has(d.id));
+    if (!pool.length) break;
+    const best = pool.map(d => [d, scoreForWeek(d, [...fixed, ...picked], opts)]).sort((a, b) => b[1] - a[1])[0][0];
+    picked.push(best);
+    taken.add(best.id);
+  }
+  return picked;
+}
