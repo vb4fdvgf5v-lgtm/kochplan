@@ -146,3 +146,22 @@ test('Schnell anpassen: Mengen in sinnvollen Schritten', async () => {
   assert.equal(stepAmount(30, 'g', -1), 20);
   assert.equal(stepAmount(1, 'EL', 1), 1.5);
 });
+
+test('Gerichte nach Eiweißquelle und Status filtern', async () => {
+  const { proteinsOf, filterDishes } = await import('../js/logic.js');
+  const ing = (...names) => names.map(name => ({ name, amount: 1, unit: 'Stück' }));
+  const curry = { id: 'c', name: 'Curry', minutes: 30, ingredients: ing('Hähnchenbrust', 'Reis') };
+  const chili = { id: 'h', name: 'Chili', minutes: 45, ingredients: ing('Rinderhackfleisch', 'Kidneybohnen') };
+  const dal = { id: 'd', name: 'Dal', minutes: 20, rating: { taste: 5 }, ingredients: ing('Rote Linsen', 'Möhre') };
+  const pasta = { id: 'p', name: 'Garnelen-Pasta', minutes: 20, ingredients: ing('Garnelen', 'Spaghetti') };
+  assert.deepEqual([...proteinsOf(curry)], ['gefluegel']);
+  assert.deepEqual([...proteinsOf(dal)], ['veggie']);
+  assert.deepEqual([...proteinsOf(pasta)], ['fisch']);
+  const all = [curry, chili, dal, pasta];
+  const ids = (f, opts) => filterDishes(all, f, opts).map(d => d.id);
+  assert.deepEqual(ids(['gefluegel', 'rind']), ['c', 'h']); // oder innerhalb der Gruppe
+  assert.deepEqual(ids(['veggie', 'fast']), ['d']); // und zwischen den Gruppen
+  assert.deepEqual(ids(['cooked'], { cookedAgo: d => d.id === 'h' ? 3 : null }), ['h']);
+  assert.deepEqual(ids(['new'], { cookedAgo: d => d.id === 'h' ? 3 : null }), ['c', 'd', 'p']);
+  assert.deepEqual(ids(['top']), ['d']);
+});

@@ -1,4 +1,4 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, stepAmount, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, stepAmount, DISH_FILTERS, filterDishes, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked, daysBetween } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, DEFAULT_BASICS, demoWeeks } from './seed.js';
 import { parseRecipeText, parseIngredientLine, SAMPLE_RECIPE_TEXT } from './import.js';
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.13.1';
+const APP_VERSION = '0.14';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -21,7 +21,7 @@ const ui = {
   view: NAV.some(([v]) => v === params.get('view')) ? params.get('view') : 'week',
   week: mondayOf(today()),
   sheet: null, // { type: 'entry' | 'pick' | 'dish' | 'edit' | 'paste' | 'pantry', ... }
-  dishSearch: '', dishSort: 'name', boughtOpen: false, pickSearch: '', pickFast: false, findFast: false,
+  dishSearch: '', dishSort: 'name', dishFilters: [], boughtOpen: false, pickSearch: '', pickFast: false, findFast: false,
   pasteText: '', // Rezepttext zum Erkennen
   basicsPick: [], basicsEdit: false, // Basics prüfen: angetippte Basics, Bearbeiten-Modus
   findFocus: null, // Resteküche: nur Gerichte mit dieser Zutat
@@ -359,7 +359,8 @@ const extraForm = () => `<form class="inline-form" data-form="extra">
 
 function viewDishes() {
   const q = keyOf(ui.dishSearch);
-  const list = data.dishes
+  const filtered = filterDishes(data.dishes, ui.dishFilters, { cookedAgo, custom: data.categories });
+  const list = filtered
     .filter(d => !q || keyOf(d.name).includes(q) || d.tags?.some(t => keyOf(t).includes(q))
       || d.ingredients.some(i => keyOf(i.name).includes(q)))
     .sort((a, b) => (ui.dishSort === 'name' ? 0 : (b.rating?.[ui.dishSort] ?? 0) - (a.rating?.[ui.dishSort] ?? 0))
@@ -388,12 +389,76 @@ function viewDishes() {
     </div>${more}`;
   }
   return `${header}
-    <label class="search">${icon('search')}<input id="dish-search" type="search" data-bind="dishSearch" value="${esc(ui.dishSearch)}"
-      placeholder="Gericht, Zutat oder Schlagwort" autocomplete="off"></label>
-    <div class="chips sort">${[['name', 'A–Z'], ['taste', 'Am leckersten'], ['ease', 'Am einfachsten']].map(([k, label]) =>
-      `<button class="chip ${ui.dishSort === k ? 'on' : ''}" data-action="sort" data-sort="${k}">${label}</button>`).join('')}</div>
+    <div class="search-row">
+      <label class="search">${icon('search')}<input id="dish-search" type="search" data-bind="dishSearch" value="${esc(ui.dishSearch)}"
+        placeholder="Gericht oder Zutat suchen" autocomplete="off"></label>
+      <button class="filter-btn ${ui.dishFilters.length ? 'active' : ''}" data-action="filters" aria-label="Filter">${icon('tune')}
+        ${ui.dishFilters.length ? `<span class="badge">${ui.dishFilters.length}</span>` : ''}</button>
+    </div>
+    ${categoryPills()}
+    ${extraFilterChips()}
+    <div class="list-bar">
+      <span class="result-count"><b>${list.length}</b> ${list.length === 1 ? 'Gericht' : 'Gerichte'}</span>
+      <label class="sort-dd"><select data-bind="dishSort" aria-label="Sortieren">
+        ${[['name', 'A–Z'], ['taste', 'Am leckersten'], ['ease', 'Am einfachsten']].map(([k, label]) =>
+          `<option value="${k}" ${ui.dishSort === k ? 'selected' : ''}>${label}</option>`).join('')}</select>${icon('expand_more')}</label>
+    </div>
     <div class="list">${list.map(dishRow).join('') || '<p class="muted center pad">Nichts gefunden.</p>'}</div>
     ${more}`;
+}
+
+// Kategorien wie in einer Food-App: runde Symbole zum Antippen, „Alle“ hebt die Auswahl auf
+const PROTEIN_PILLS = [['gefluegel', 'Geflügel', 'kebab_dining'], ['rind', 'Rind & Hack', 'lunch_dining'],
+  ['fisch', 'Fisch', 'set_meal'], ['veggie', 'Veggie', 'eco']];
+const FILTER_ICONS = { cooked: 'check_circle', new: 'fiber_new', fast: 'bolt', top: 'favorite' };
+function categoryPills() {
+  const none = !PROTEIN_PILLS.some(([k]) => ui.dishFilters.includes(k));
+  const pill = (k, label, ic, on) => `<button class="cat-pill ${on ? 'on' : ''}" data-action="${k ? 'dish-filter' : 'dish-protein-all'}" ${k ? `data-key="${k}"` : ''} aria-pressed="${on}">
+    <span class="cat-icon">${icon(ic)}</span><span>${label}</span></button>`;
+  return `<div class="cat-pills">${pill('', 'Alle', 'restaurant', none)}${PROTEIN_PILLS.map(([k, label, ic]) => pill(k, label, ic, ui.dishFilters.includes(k))).join('')}</div>`;
+}
+// Aktive Zusatzfilter (gekocht, schnell …) als Chips mit ×, damit man sieht, was gerade gilt
+function extraFilterChips() {
+  const extra = DISH_FILTERS.filter(([k]) => FILTER_ICONS[k] && ui.dishFilters.includes(k));
+  if (!extra.length) return '';
+  return `<div class="active-filters">${extra.map(([k, label]) =>
+    `<button class="active-chip" data-action="dish-filter" data-key="${k}">${icon(FILTER_ICONS[k])}${label}${icon('close')}</button>`).join('')}
+    <button class="link" data-action="dish-filter-reset">Alle löschen</button></div>`;
+}
+
+// Filter-Fenster: Bereiche mit Kacheln, Zahl der Treffer je Option, unten „N Gerichte anzeigen“
+function sheetFilters() {
+  const opts = { cookedAgo, custom: data.categories };
+  const count = f => filterDishes(data.dishes, f, opts).length;
+  // Zahl je Kachel: so viele Gerichte gibt es mit dieser Option, unter Beibehaltung der anderen Bereiche
+  const PROTEINS = PROTEIN_PILLS.map(p => p[0]);
+  const withOption = k => {
+    let f = ui.dishFilters.filter(x => x !== k);
+    if (PROTEINS.includes(k)) f = f.filter(x => !PROTEINS.includes(x));
+    if (k === 'cooked' || k === 'new') f = f.filter(x => x !== 'cooked' && x !== 'new');
+    return [...f, k];
+  };
+  const SHORT = { gefluegel: 'Geflügel', veggie: 'Veggie', cooked: 'Gekocht', new: 'Noch nie', fast: 'Bis 20 Min.', top: 'Lieblinge' };
+  const tile = ([k, fullLabel]) => {
+    const on = ui.dishFilters.includes(k);
+    const label = SHORT[k] ?? fullLabel;
+    const n = count(withOption(k));
+    const ic = FILTER_ICONS[k] ?? PROTEIN_PILLS.find(p => p[0] === k)?.[2];
+    return `<button class="filter-tile ${on ? 'on' : ''}" data-action="dish-filter" data-key="${k}" aria-pressed="${on}" ${!on && !n ? 'disabled' : ''}>
+      ${icon(ic)}<span>${label}</span><small>${n}</small></button>`;
+  };
+  const section = (title, keys) => `<h4>${title}</h4><div class="filter-grid">${DISH_FILTERS.filter(([k]) => keys.includes(k)).map(tile).join('')}</div>`;
+  const total = count(ui.dishFilters);
+  return {
+    title: 'Filter',
+    body: `${section('Eiweißquelle', ['gefluegel', 'rind', 'fisch', 'veggie'])}
+      ${section('Gekocht', ['cooked', 'new'])}
+      ${section('Zeit & Bewertung', ['fast', 'top'])}
+      <div class="btn-row sheet-actions filter-actions">
+        <button class="btn ghost" data-action="dish-filter-reset" ${ui.dishFilters.length ? '' : 'disabled'}>Zurücksetzen</button>
+        <button class="btn primary" data-action="close">${plural(total, 'Gericht', 'Gerichte')} anzeigen</button>
+      </div>`,
+  };
 }
 
 function dishRow(d) {
@@ -471,7 +536,7 @@ function viewFind() {
 
 function viewSheet() {
   const s = ui.sheet;
-  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics }[s.type]();
+  const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics, filters: sheetFilters }[s.type]();
   return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''} ${['basics', 'rate'].includes(s.type) ? 'full' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
@@ -938,6 +1003,18 @@ const actions = {
     commit();
   },
   sort: el => { ui.dishSort = el.dataset.sort; render(); },
+  'dish-filter': el => {
+    const k = el.dataset.key;
+    let f = ui.dishFilters.includes(k) ? ui.dishFilters.filter(x => x !== k) : [...ui.dishFilters, k];
+    // „Schon gekocht“ und „Noch nie gekocht“ schließen sich aus
+    if (k === 'cooked' && f.includes('cooked')) f = f.filter(x => x !== 'new');
+    if (k === 'new' && f.includes('new')) f = f.filter(x => x !== 'cooked');
+    ui.dishFilters = f;
+    render();
+  },
+  'dish-filter-reset': () => { ui.dishFilters = []; render(); },
+  'dish-protein-all': () => { ui.dishFilters = ui.dishFilters.filter(k => FILTER_ICONS[k]); render(); },
+  filters: () => { openSheet({ type: 'filters' }); render(); },
   uncook: () => {
     const entry = ui.sheet.type === 'entry' ? entryById(ui.sheet.week, ui.sheet.id)
       : weekEntries(mondayOf(today())).find(e => e.dishId === ui.sheet.id && e.cooked === today());

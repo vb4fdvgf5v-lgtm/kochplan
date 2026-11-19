@@ -362,7 +362,7 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
 .stars button { background: none; border: 0; padding: 4px; color: var(--accent); cursor: pointer; }
 .stars button .ms { font-size: 30px; }
 .stars button.off { color: var(--line); }
-.chips.sort { margin: 0 0 12px; }
+
 .rated { color: var(--accent) !important; display: inline-flex; align-items: center; gap: 3px; }
 .rated .ms { font-size: 14px; }
 .btn:disabled { opacity: .4; }
@@ -430,3 +430,47 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
 .next-time > .ms { color: var(--accent); }
 .next-time span { display: grid; gap: 2px; white-space: pre-wrap; }
 .next-time b { color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+
+/* Filter in der Gerichteliste: Suche mit Filter-Knopf, Kategorien mit Symbolen, Ergebniszeile */
+.search-row { display: flex; gap: 8px; align-items: stretch; margin-bottom: 14px; }
+.search-row .search { flex: 1; display: flex; align-items: center; gap: 8px; }
+.filter-btn { position: relative; flex: none; width: 48px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.filter-btn .badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px;
+  background: var(--text); color: var(--bg, #141216); font-size: 12px; font-weight: 750; display: grid; place-items: center; }
+.cat-pills { display: flex; gap: 8px; justify-content: space-between; overflow-x: auto; margin: 0 -16px 10px; padding: 2px 16px 4px; scrollbar-width: none; }
+.cat-pills::-webkit-scrollbar { display: none; }
+.cat-pill { flex: none; display: grid; justify-items: center; gap: 6px; background: none; border: 0; padding: 0; cursor: pointer;
+  color: var(--muted); font-size: 12.5px; font-weight: 600; min-width: 56px; }
+.cat-icon { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--line); transition: background .15s, border-color .15s; }
+.cat-icon .ms { font-size: 26px; color: var(--text); }
+.cat-pill.on { color: var(--accent); }
+.cat-pill.on .cat-icon { background: var(--accent-soft); border-color: var(--accent); }
+.cat-pill.on .cat-icon .ms { color: var(--accent); }
+.active-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 2px 0 10px; }
+.active-chip { display: inline-flex; align-items: center; gap: 4px; padding: 6px 8px 6px 10px; border-radius: 999px; cursor: pointer;
+  background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent);
+  font-size: 13px; font-weight: 600; }
+.active-chip .ms { font-size: 16px; }
+.list-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 4px 2px 10px; }
+.result-count { color: var(--muted); font-size: 14px; }
+.result-count b { color: var(--text); }
+.link { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; font-size: 13px; cursor: pointer; }
+.sort-dd { position: relative; display: inline-flex; align-items: center; gap: 4px; color: var(--text); font-size: 14px; font-weight: 600; }
+.sort-dd .ms { font-size: 18px; color: var(--muted); }
+.sort-dd select { appearance: none; -webkit-appearance: none; background: none; border: 0; color: inherit; font: inherit;
+  font-size: 16px; padding: 4px 0; cursor: pointer; text-align: right; text-align-last: right; direction: rtl; }
+/* Filter-Fenster */
+.filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.filter-tile { display: flex; align-items: center; gap: 10px; padding: 14px 12px; border-radius: 14px; cursor: pointer; text-align: left;
+  background: var(--surface-2); border: 1.5px solid transparent; color: var(--text); font: inherit; font-weight: 600; font-size: 15px; }
+.filter-tile .ms { font-size: 22px; color: var(--muted); }
+.filter-tile > span:not(.ms) { flex: 1; min-width: 0; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.filter-tile > .ms { flex: none; }
+.filter-tile small { color: var(--muted); font-weight: 600; font-size: 13px; }
+.filter-tile.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.filter-tile.on .ms, .filter-tile.on small { color: var(--accent); }
+.filter-tile:disabled { opacity: .4; cursor: default; }
+.filter-actions { display: grid; grid-template-columns: auto 1fr; margin-top: 16px; }

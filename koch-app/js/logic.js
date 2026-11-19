@@ -247,3 +247,42 @@ export function stepAmount(amount, unit, dir) {
   const next = Math.round((amount + dir * step) * 100) / 100;
   return next >= step - 1e-9 ? next : amount;
 }
+
+// ---------- Filter für die Gerichteliste ----------
+// Eiweißquelle aus den Zutaten ableiten (nicht aus Tags, die ältere Gerichte nicht haben).
+const PROTEIN_WORDS = {
+  gefluegel: ['hähnchen', 'huhn', 'hühnchen', 'pute', 'puten', 'chicken'],
+  rind: ['rind', 'rinder', 'steak', 'hack', 'hackfleisch', 'rinderhack', 'beef'],
+  fisch: ['lachs', 'thunfisch', 'garnele', 'garnelen', 'fisch', 'forelle', 'kabeljau', 'shrimps', 'scampi'],
+};
+export function proteinsOf(dish, custom = {}) {
+  const found = new Set();
+  for (const ing of dish.ingredients ?? []) {
+    const key = keyOf(ing.name);
+    for (const [group, words] of Object.entries(PROTEIN_WORDS)) {
+      if (words.some(w => key.startsWith(w) || key.split(/[\s-]+/).some(p => p.startsWith(w)))) found.add(group);
+    }
+  }
+  // Vegetarisch: keine Zutat aus dem Bereich Fleisch & Fisch und kein Treffer oben
+  const meat = (dish.ingredients ?? []).some(i => categoryOf(i.name, custom) === 'fleisch');
+  if (!found.size && !meat) found.add('veggie');
+  return found;
+}
+
+export const DISH_FILTERS = [
+  ['gefluegel', 'Hähnchen & Pute'], ['rind', 'Rind & Hack'], ['fisch', 'Fisch'], ['veggie', 'Vegetarisch'],
+  ['cooked', 'Schon gekocht'], ['new', 'Noch nie gekocht'], ['fast', 'Bis 20 Min.'], ['top', 'Lieblinge'],
+];
+// Innerhalb der Eiweißquellen gilt „oder“, zwischen den Gruppen „und“.
+export function filterDishes(dishes, active, { cookedAgo = () => null, custom = {} } = {}) {
+  const proteins = active.filter(f => ['gefluegel', 'rind', 'fisch', 'veggie'].includes(f));
+  return dishes.filter(d => {
+    if (proteins.length) { const p = proteinsOf(d, custom); if (!proteins.some(x => p.has(x))) return false; }
+    const ago = cookedAgo(d);
+    if (active.includes('cooked') && ago == null) return false;
+    if (active.includes('new') && ago != null) return false;
+    if (active.includes('fast') && !((d.minutes ?? 999) <= 20)) return false;
+    if (active.includes('top') && !((d.rating?.taste ?? 0) >= 4)) return false;
+    return true;
+  });
+}
