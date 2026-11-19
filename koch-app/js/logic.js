@@ -229,3 +229,12 @@ export function groupByCategory(items, nameOf, custom = {}, order = CATEGORIES.m
   }
   return [...groups].filter(([, list]) => list.length).map(([id, list]) => ({ id, name: CATEGORY_NAMES[id] ?? id, items: list }));
 }
+
+// Tag für eine Zutat aus „Gibt's hier nicht“: „nur Lidl“, wenn es sie in den anderen Märkten nicht gibt.
+// Gibt es sie überall (oder ist nur ein Markt angelegt), kein Tag.
+export function storeTag(stores = [], key) {
+  if (stores.length < 2) return '';
+  const avail = stores.filter(st => !st.missing?.[key]);
+  if (avail.length === stores.length) return '';
+  return avail.length ? `nur ${avail.map(st => st.name).join(' / ')}` : 'in keinem Markt';
+}

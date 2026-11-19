@@ -5,7 +5,7 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
 
 ## Stand (11.11.2026)
 
-- **Version 0.11.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
+- **Version 0.12.** Eigenes Git-Repo `kochplan` (seit 02.11.2026), getrennt vom Putzplan.
 - 0.2: Gerichte gehören zur **Woche**, ein Tag ist optional (Matthes' Wunsch: „Diese Woche koche ich das und das“).
   Daten: `weeks[montag] = [{ id, dishId, servings, day|null }]`; 0.1-Daten (`plan[datum]`) werden beim Laden umgestellt.
 - 0.3: **Rezept aus Foto-Text** (Gerichte → Einfügen). Text per iPhone-Livetext kopieren, einfügen, `js/import.js`
@@ -29,6 +29,9 @@ Woche planen, Einkaufsliste bekommen, Resteküche („Was kann ich mit Hackfleis
   „Basics prüfen“ oben auf der Einkaufsliste: nichts vorausgewählt, Fehlendes antippen, „Auf die Liste“ legt sie als
   `extra` mit `basic: true` an. Startliste `DEFAULT_BASICS` in `seed.js` (Skyr, Brot, Eier, Griechischer Joghurt, Joghurt,
   Bananen), greift auch bei vorhandenen Daten ohne `basics`. Neuer Bereich „Drogerie & Haushalt“.
+- 0.12: **Markt-Tags** statt Lernen beim Abhaken: „Gibt's hier nicht“ im gewählten Markt setzt `missing`, daraus leitet
+  `storeTag` den Tag „nur Lidl“ ab (nur bei ≥ 2 Märkten). Tag steht auf der Einkaufsliste und in der Zutatenliste des Gerichts.
+  Matthes' Flow: Woche planen → Einkaufsliste → zu Hause „Hab ich“/Basics → im Laden Markt wählen, Fehlendes markieren.
 - Matthes nutzt sie vorerst **allein**, deshalb kein Supabase: Daten liegen in `localStorage` (`koch:data`),
   Sicherung als JSON-Datei über „Daten sichern“.
 - Kein KI-Dialog gewünscht. Die App soll die Antworten über gute Ansichten liefern.

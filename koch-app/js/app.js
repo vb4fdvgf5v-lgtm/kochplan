@@ -1,4 +1,4 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked, daysBetween } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, DEFAULT_BASICS, demoWeeks } from './seed.js';
 import { parseRecipeText, SAMPLE_RECIPE_TEXT } from './import.js';
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.11';
+const APP_VERSION = '0.12';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -81,8 +81,8 @@ function toggleInWeek(week, dish) {
 // Supermärkte: stores = [{ id, name, has: { key: true }, missing: { key: true } }], data.store = gewählter Markt
 const currentStore = () => data.stores?.find(x => x.id === data.store) ?? null;
 const missingIn = (store, key) => !!store?.missing?.[key];
-// Andere Märkte, in denen es die Zutat gibt (dort schon gekauft)
-const elsewhere = (key, store) => (data.stores ?? []).filter(x => x !== store && x.has?.[key]).map(x => x.name);
+// Kleiner Tag „nur Lidl“ hinter einer Zutat, gesetzt über „Gibt's hier nicht“
+const tagFor = name => { const t = storeTag(data.stores, keyOf(name)); return t ? ` <i class="store-tag">${icon('storefront')}${esc(t)}</i>` : ''; };
 
 // Einkaufszustand je Woche: im Wagen, „hab ich noch“, leere Vorratszutaten, eigene Zusätze.
 // bought: nach „Einkauf erledigt“ ausgeblendet, gemerkt mit der damaligen Menge. Braucht man später mehr, taucht es wieder auf.
@@ -275,10 +275,10 @@ function viewShop() {
     ${sections}
     ${missing.length ? `<h3 class="cat-head missing-head">${icon('remove_shopping_cart')}Gibt's bei ${esc(store.name)} nicht<small>${missing.length}</small></h3>
       <div class="list">${missing.map(x => {
-        const key = keyOf(x.name), alt = elsewhere(key, store);
+        const key = keyOf(x.name);
         return `<div class="item have">
-          <span class="item-main"><span class="item-text"><b>${esc(x.name)}</b>
-            <small>${alt.length ? `Gibt's bei ${esc(alt.join(', '))}` : 'Woanders besorgen'}${x.amounts && amountText(x) ? ` · ${esc(amountText(x))}` : ''}</small></span></span>
+          <span class="item-main"><span class="item-text"><b>${esc(x.name)}${tagFor(x.name)}</b>
+            <small>${x.amounts && amountText(x) ? esc(amountText(x)) : 'Woanders besorgen'}</small></span></span>
           <button class="item-side ghost" data-action="not-missing" data-key="${esc(key)}">Gibt's doch</button>
         </div>`;
       }).join('')}</div>` : ''}
@@ -312,7 +312,7 @@ function itemRow(i, s) {
   return `<div class="item ${done ? 'done' : ''}">
     <button class="item-main" data-action="toggle-done" data-key="${esc(i.key)}" aria-pressed="${done}">
       <span class="ms tick" aria-hidden="true">${done ? 'check_circle' : 'radio_button_unchecked'}</span>
-      <span class="item-text"><b>${esc(i.name)}</b><small>${esc(sub)}</small></span>
+      <span class="item-text"><b>${esc(i.name)}${tagFor(i.name)}</b><small>${esc(sub)}</small></span>
     </button>
     ${done ? '' : side}
     ${!done && currentStore() ? missingBtn(i.key) : ''}
@@ -324,7 +324,7 @@ function extraRow(x) {
   return `<div class="item ${x.done ? 'done' : ''}">
     <button class="item-main" data-action="extra-done" data-id="${x.id}" aria-pressed="${!!x.done}">
       <span class="ms tick" aria-hidden="true">${x.done ? 'check_circle' : 'radio_button_unchecked'}</span>
-      <span class="item-text"><b>${esc(x.name)}</b><small>${x.basic ? 'Basic' : 'selbst dazugeschrieben'}</small></span>
+      <span class="item-text"><b>${esc(x.name)}${tagFor(x.name)}</b><small>${x.basic ? 'Basic' : 'selbst dazugeschrieben'}</small></span>
     </button>
     ${!x.done && currentStore() ? missingBtn(keyOf(x.name)) : ''}
     <button class="icon-btn" data-action="extra-remove" data-id="${x.id}" aria-label="Entfernen">${icon('close')}</button>
@@ -484,7 +484,7 @@ function viewSheet() {
 function ingredientList(dish, servings = dish.servings) {
   const factor = (servings || 1) / (dish.servings || 1);
   return `<ul class="ings">${dish.ingredients.map(i => `<li>
-    <span>${esc(i.name)}${data.staples.includes(keyOf(i.name)) ? ' <i class="tag-vorrat">Vorrat</i>' : ''}</span>
+    <span>${esc(i.name)}${data.staples.includes(keyOf(i.name)) ? ' <i class="tag-vorrat">Vorrat</i>' : ''}${tagFor(i.name)}</span>
     <span class="num muted">${esc(i.amount ? fmtAmount(i.amount * factor, i.unit) : '')}</span>
   </li>`).join('')}</ul>`;
 }
@@ -939,7 +939,8 @@ const actions = {
     const st = currentStore();
     (st.missing ??= {})[el.dataset.key] = true;
     delete st.has?.[el.dataset.key];
-    toast(`Gemerkt: gibt's bei ${st.name} nicht`);
+    const tag = storeTag(data.stores, el.dataset.key);
+    toast(`Okay, gibt's bei ${st.name} nicht${tag && tag !== 'in keinem Markt' ? ` – ab jetzt „${tag}“` : ''}`);
     commit();
   },
   'not-missing': el => { delete currentStore()?.missing?.[el.dataset.key]; commit(); },

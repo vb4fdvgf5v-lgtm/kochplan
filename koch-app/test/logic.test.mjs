@@ -124,3 +124,12 @@ test('Resteküche: am besten passende Gerichte zuerst, komplett passende markier
   assert.equal(r[1].complete, false);
   assert.ok(Math.abs(r[1].share - 2 / 3) < 1e-9);
 });
+
+test('Markt-Tag aus „Gibt\'s hier nicht“', async () => {
+  const { storeTag } = await import('../js/logic.js');
+  const rewe = { name: 'Rewe', missing: { lachs: true } }, lidl = { name: 'Lidl', missing: {} };
+  assert.equal(storeTag([rewe, lidl], 'lachs'), 'nur Lidl');
+  assert.equal(storeTag([rewe, lidl], 'reis'), '');
+  assert.equal(storeTag([rewe], 'lachs'), ''); // ein Markt allein: kein Tag
+  assert.equal(storeTag([rewe, { name: 'Lidl', missing: { lachs: true } }], 'lachs'), 'in keinem Markt');
+});
