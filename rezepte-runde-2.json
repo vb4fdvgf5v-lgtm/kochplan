@@ -1,0 +1,1628 @@
+{
+  "kind": "kochplan-rezepte",
+  "dishes": [
+    {
+      "id": "r2-1",
+      "name": "Erdnuss-Hähnchen-Bowl mit Edamame",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Bowl"
+      ],
+      "notes": "1. Reis kochen, Edamame die letzten 4 Minuten mitgaren.\n2. Hähnchen in Streifen schneiden und in Öl 5–6 Minuten goldbraun braten.\n3. Erdnussmus, Sojasoße, Limettensaft, Honig und 3 EL warmes Wasser glatt rühren.\n4. Gurke und Möhre in feine Streifen schneiden.\n5. Reis, Edamame, Gemüse und Hähnchen in Schüsseln anrichten, Erdnusssoße darüber.\nPro Portion ca. 620 kcal · 48 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Hähnchenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Edamame",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Möhre",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Erdnussmus",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Limette",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Honig",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    },
+    {
+      "id": "r2-2",
+      "name": "Hüttenkäse-Bowl mit Hähnchen und Ofenkartoffeln",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Bowl"
+      ],
+      "notes": "1. Ofen auf 220 °C Umluft vorheizen. Kartoffeln würfeln, mit Olivenöl, Paprikapulver und Salz mischen und 20–25 Minuten knusprig backen.\n2. Hähnchen salzen, pfeffern und in einer Pfanne je Seite 5 Minuten braten, in Scheiben schneiden.\n3. Skyr mit Senf, 2 EL Wasser, Salz und Pfeffer zu einem Dressing rühren.\n4. Gurke und Tomaten würfeln.\n5. Kartoffeln, Hähnchen, Gemüse und Hüttenkäse in Schüsseln anrichten, Dressing darüber.\nPro Portion ca. 520 kcal · 50 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Kartoffeln",
+          "amount": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Hähnchenbrust",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Hüttenkäse",
+          "amount": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Tomaten",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Skyr",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Senf",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-3",
+      "name": "Italienische Hähnchen-Bowl mit Zitronenreis",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Bowl"
+      ],
+      "notes": "1. Reis kochen, danach mit abgeriebener Zitronenschale, etwas Zitronensaft und gehacktem Basilikum mischen.\n2. Hähnchen in Würfel schneiden, mit Oregano, Salz und Pfeffer würzen und in Olivenöl 5 Minuten braten. Mit Balsamico ablöschen und kurz einkochen.\n3. Zucchini in Halbmonde, Zwiebel in Spalten schneiden und 4 Minuten mitbraten, Tomaten halbiert zum Schluss dazu.\n4. Zitronenreis, Hähnchen und Gemüse anrichten, Parmesan darüberhobeln.\nPro Portion ca. 560 kcal · 45 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Hähnchenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Zitrone",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zucchini",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Rote Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Balsamico",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Parmesan",
+          "amount": 30,
+          "unit": "g"
+        },
+        {
+          "name": "Basilikum",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Oregano",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-4",
+      "name": "Kokos-Puten-Pfanne mit Spinat",
+      "minutes": 20,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell"
+      ],
+      "notes": "1. Reis kochen.\n2. Pute in Streifen schneiden und in Öl 4 Minuten scharf anbraten.\n3. Paprika in Streifen und Currypaste dazugeben, 2 Minuten mitbraten.\n4. Kokosmilch angießen, 5 Minuten köcheln lassen, Spinat unterheben, bis er zusammenfällt.\n5. Mit Sojasoße und Limettensaft abschmecken, mit Reis servieren.\nPro Portion ca. 520 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Putenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Kokosmilch light",
+          "amount": 200,
+          "unit": "ml"
+        },
+        {
+          "name": "Rote Currypaste",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Babyspinat",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Limette",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    },
+    {
+      "id": "r2-5",
+      "name": "Erdnuss-Curry mit Hähnchen und Süßkartoffel",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich"
+      ],
+      "notes": "1. Süßkartoffel schälen und in 1-cm-Würfel schneiden, Zwiebel, Knoblauch und Ingwer fein hacken.\n2. Zwiebel, Knoblauch und Ingwer in Öl anschwitzen, Currypulver kurz mitrösten.\n3. Süßkartoffel, Tomaten und Kokosmilch dazugeben, zugedeckt 12 Minuten köcheln.\n4. Hähnchen in Würfel schneiden, dazugeben und 6 Minuten mitgaren.\n5. Erdnussmus einrühren, Spinat unterheben, salzen.\nPro Portion ca. 580 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Hähnchenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Süßkartoffel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Kokosmilch light",
+          "amount": 200,
+          "unit": "ml"
+        },
+        {
+          "name": "Gehackte Tomaten",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Erdnussmus",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Currypulver",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Babyspinat",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-6",
+      "name": "One-Pot-Pasta mit Hähnchen und Brokkoli",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Pasta"
+      ],
+      "notes": "1. Hähnchen würfeln und in einem großen Topf in Öl 4 Minuten anbraten, Zwiebel und Knoblauch kurz mitbraten.\n2. Gemüsebrühe angießen, Spaghetti halbiert dazugeben und 8 Minuten köcheln, dabei öfter umrühren.\n3. Brokkoli in kleine Röschen teilen, dazugeben und weitere 4 Minuten garen, bis die Flüssigkeit fast aufgesogen ist.\n4. Frischkäse und Parmesan unterrühren, mit Salz und Pfeffer abschmecken.\nPro Portion ca. 600 kcal · 48 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Hähnchenbrust",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Vollkornspaghetti",
+          "amount": 160,
+          "unit": "g"
+        },
+        {
+          "name": "Brokkoli",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 500,
+          "unit": "ml"
+        },
+        {
+          "name": "Frischkäse light",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Parmesan",
+          "amount": 30,
+          "unit": "g"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-7",
+      "name": "Garnelen in Parmesan-Tomaten-Soße",
+      "minutes": 20,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell",
+        "Fisch",
+        "Pasta"
+      ],
+      "notes": "1. Spaghetti kochen, etwas Nudelwasser aufheben.\n2. Knoblauch in Olivenöl anschwitzen, halbierte Tomaten 4 Minuten schmoren, bis sie aufplatzen.\n3. Garnelen dazugeben und 2–3 Minuten garen, Spinat unterheben.\n4. Pfanne vom Herd nehmen, Skyr, Parmesan und etwas Nudelwasser einrühren.\n5. Mit Spaghetti mischen, mit Basilikum, Salz und Pfeffer abschmecken.\nPro Portion ca. 520 kcal · 45 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Garnelen",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Vollkornspaghetti",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Babyspinat",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 2,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Skyr",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Parmesan",
+          "amount": 30,
+          "unit": "g"
+        },
+        {
+          "name": "Basilikum",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-8",
+      "name": "Knusprige Kichererbsen-Pfanne mit Feta und Ei",
+      "minutes": 15,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell",
+        "vegetarisch"
+      ],
+      "notes": "1. Kichererbsen abspülen, gut trocken tupfen und in Olivenöl mit Kreuzkümmel und Paprikapulver 6–8 Minuten knusprig braten.\n2. Knoblauch und halbierte Tomaten 2 Minuten mitbraten, Spinat zusammenfallen lassen.\n3. Zwei Mulden formen, Eier hineinschlagen, zugedeckt 4 Minuten stocken lassen.\n4. Feta darüberbröseln, mit Vollkornbrot servieren.\nPro Portion ca. 480 kcal · 28 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Kichererbsen",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Feta",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Babyspinat",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Eier",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Kreuzkümmel",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Vollkornbrot",
+          "amount": 2,
+          "unit": "Scheibe"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-9",
+      "name": "Baked Feta mit Linsen-Spaghetti",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch",
+        "Pasta"
+      ],
+      "notes": "1. Ofen auf 200 °C Umluft vorheizen.\n2. Feta in die Mitte einer Auflaufform legen, Tomaten und Knoblauch drumherum, mit Olivenöl, Oregano und Pfeffer würzen, 20 Minuten backen.\n3. Währenddessen Linsen-Spaghetti nach Packung kochen, etwas Nudelwasser aufheben.\n4. Feta und Tomaten in der Form zerdrücken, mit Spaghetti und etwas Nudelwasser mischen, Basilikum darüber.\nPro Portion ca. 640 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Feta",
+          "amount": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Linsen-Spaghetti",
+          "amount": 160,
+          "unit": "g"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Basilikum",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Oregano",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-10",
+      "name": "Falafel-Wraps mit Tzatziki",
+      "minutes": 20,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell",
+        "vegetarisch"
+      ],
+      "notes": "1. Falafel nach Packung im Ofen oder in der Pfanne erhitzen.\n2. Für das Tzatziki ein Drittel der Gurke reiben, gut ausdrücken und mit Joghurt, gepresstem Knoblauch und Salz verrühren.\n3. Restliche Gurke und Tomaten schneiden.\n4. Wraps kurz erwärmen, mit Tzatziki, Rucola, Gemüse und Falafel füllen und einrollen.\nPro Portion ca. 620 kcal · 25 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Falafel",
+          "amount": 1,
+          "unit": "Packung"
+        },
+        {
+          "name": "Vollkorn-Wraps",
+          "amount": 4,
+          "unit": "Stück"
+        },
+        {
+          "name": "Griechischer Joghurt",
+          "amount": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Tomaten",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Rucola",
+          "amount": 50,
+          "unit": "g"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-11",
+      "name": "Karotten-Linsen-Dal mit Joghurt",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch"
+      ],
+      "notes": "1. Zwiebel, Knoblauch und Ingwer fein hacken, Möhren grob reiben.\n2. Zwiebel, Knoblauch und Ingwer in Öl anschwitzen, Currypulver und Kreuzkümmel 1 Minute mitrösten.\n3. Möhren, Linsen, Tomaten und Gemüsebrühe dazugeben, 15 Minuten köcheln, bis die Linsen weich sind.\n4. Salzen, in Schalen füllen und mit einem Klecks Joghurt servieren.\nPro Portion ca. 470 kcal · 28 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rote Linsen",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Möhre",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Gehackte Tomaten",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Currypulver",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Kreuzkümmel",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 500,
+          "unit": "ml"
+        },
+        {
+          "name": "Griechischer Joghurt",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-12",
+      "name": "Quinoa-Salat mit Kichererbsen und Feta",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch"
+      ],
+      "notes": "1. Quinoa abspülen und in doppelter Menge Salzwasser 15 Minuten garen, abkühlen lassen.\n2. Kichererbsen abspülen, Gurke, Paprika und Tomaten klein schneiden, Petersilie hacken.\n3. Zitronensaft mit Olivenöl, Salz und Pfeffer verrühren.\n4. Alles mischen und Feta darüberbröseln. Hält sich gut als Mittagessen für den nächsten Tag.\nPro Portion ca. 600 kcal · 30 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Quinoa",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Kichererbsen",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Feta",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Petersilie",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Zitrone",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-13",
+      "name": "Couscous-Tomaten-Salat mit pochierten Eiern",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch"
+      ],
+      "notes": "1. Couscous mit gleicher Menge kochendem Salzwasser übergießen, 5 Minuten quellen lassen, auflockern.\n2. Tomaten halbieren, Gurke würfeln, Petersilie hacken, mit Couscous, Zitronensaft und Olivenöl mischen.\n3. Wasser mit Essig zum Sieden bringen, Eier einzeln hineingleiten lassen und 3–4 Minuten pochieren.\n4. Salat anrichten, Hüttenkäse und je zwei Eier daraufsetzen, salzen und pfeffern.\nPro Portion ca. 520 kcal · 30 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Couscous",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Eier",
+          "amount": 4,
+          "unit": "Stück"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Hüttenkäse",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Petersilie",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Zitrone",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Essig",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-14",
+      "name": "Brokkolireis-Bowl mit Edamame und Räuchertofu",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch",
+        "Bowl"
+      ],
+      "notes": "1. Brokkoli samt Stiel im Mixer oder auf der Reibe zu „Reis“ zerkleinern.\n2. Tofu würfeln und in Öl 6 Minuten knusprig braten, mit 1 EL Sojasoße ablöschen.\n3. Brokkolireis in derselben Pfanne 3 Minuten anbraten, Edamame in heißem Wasser 3 Minuten garen.\n4. Avocado in Scheiben, Möhre in Streifen schneiden.\n5. Alles anrichten, mit restlicher Sojasoße, Limettensaft und Sesam beträufeln.\nPro Portion ca. 520 kcal · 35 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Brokkoli",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Räuchertofu",
+          "amount": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Edamame",
+          "amount": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Avocado",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Möhre",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 2,
+          "unit": "EL"
+        },
+        {
+          "name": "Limette",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sesam",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    },
+    {
+      "id": "r2-15",
+      "name": "Linsen-Chili sin Carne",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "vegetarisch"
+      ],
+      "notes": "1. Zwiebel, Knoblauch und Paprika würfeln und in Öl 4 Minuten anbraten.\n2. Tomatenmark und Gewürze kurz mitrösten.\n3. Linsen, Tomaten und Gemüsebrühe dazugeben, 15 Minuten köcheln.\n4. Abgespülte Kidneybohnen und Mais unterrühren, 5 Minuten weiterköcheln, salzen.\n5. Mit einem Klecks Joghurt servieren.\nPro Portion ca. 560 kcal · 33 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rote Linsen",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Kidneybohnen",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Gehackte Tomaten",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Mais",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Tomatenmark",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Kreuzkümmel",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 400,
+          "unit": "ml"
+        },
+        {
+          "name": "Griechischer Joghurt",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-16",
+      "name": "Puten-Teriyaki-Pfanne mit Brokkoli",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich"
+      ],
+      "notes": "1. Reis kochen.\n2. Pute in Streifen schneiden und in Öl 4 Minuten scharf anbraten, herausnehmen.\n3. Brokkoli in Röschen, Paprika in Streifen und geriebenen Ingwer 5 Minuten braten, 2 EL Wasser dazu.\n4. Pute zurückgeben, Teriyaki-Soße darübergeben und 1 Minute glasieren.\n5. Mit Sesam bestreuen und mit Reis servieren.\nPro Portion ca. 520 kcal · 45 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Putenbrust",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Brokkoli",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Teriyaki-Soße",
+          "amount": 3,
+          "unit": "EL"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sesam",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    },
+    {
+      "id": "r2-17",
+      "name": "Leichtes Boeuf Stroganoff mit Reis",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Rind"
+      ],
+      "notes": "1. Reis kochen.\n2. Steak in feine Streifen schneiden und in Öl 2 Minuten scharf anbraten, herausnehmen.\n3. Zwiebel, Pilze und Paprika im Bratfett 5 Minuten braten, Paprikapulver und Senf einrühren, mit Gemüsebrühe ablöschen.\n4. Gewürzgurken in Streifen und das Fleisch dazugeben, 1 Minute ziehen lassen.\n5. Vom Herd nehmen, Joghurt einrühren (nicht mehr kochen), mit Petersilie, Salz und Pfeffer abschmecken.\nPro Portion ca. 520 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderhüftsteak",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Champignons",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Gewürzgurken",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Senf",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Paprikapulver",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 150,
+          "unit": "ml"
+        },
+        {
+          "name": "Griechischer Joghurt",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Petersilie",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-18",
+      "name": "Rinder-Geschnetzeltes mit Senf-Soße und Kartoffeln",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Rind"
+      ],
+      "notes": "1. Kartoffeln vierteln und in Salzwasser 15–18 Minuten garen.\n2. Steak in Streifen schneiden und in Öl 2 Minuten scharf anbraten, herausnehmen.\n3. Zwiebel und Zucchini in Würfeln 4 Minuten braten.\n4. Gemüsebrühe, Senf und Frischkäse einrühren, Fleisch zurückgeben und kurz erhitzen.\n5. Mit Schnittlauch, Salz und Pfeffer abschmecken, mit den Kartoffeln servieren.\nPro Portion ca. 500 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderhüftsteak",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Kartoffeln",
+          "amount": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Zucchini",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Senf",
+          "amount": 2,
+          "unit": "TL"
+        },
+        {
+          "name": "Frischkäse light",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 150,
+          "unit": "ml"
+        },
+        {
+          "name": "Schnittlauch",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-19",
+      "name": "Steakstreifen-Tomaten-Pfanne mit Kartoffelpüree",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Rind"
+      ],
+      "notes": "1. Kartoffeln schälen, würfeln und in Salzwasser 15 Minuten weich kochen, mit warmer Milch zu Püree stampfen.\n2. Steak in Streifen schneiden, in Olivenöl 2 Minuten scharf anbraten, herausnehmen.\n3. Zwiebel in Spalten und Knoblauch 2 Minuten braten, halbierte Tomaten 3 Minuten schmoren.\n4. Fleisch zurückgeben, salzen, pfeffern, mit Rucola und Püree servieren.\nPro Portion ca. 520 kcal · 40 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderhüftsteak",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Kartoffeln",
+          "amount": 500,
+          "unit": "g"
+        },
+        {
+          "name": "Milch",
+          "amount": 100,
+          "unit": "ml"
+        },
+        {
+          "name": "Cherrytomaten",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Rote Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Rucola",
+          "amount": 50,
+          "unit": "g"
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-20",
+      "name": "Rinderfilet mit Pilzen und grünen Bohnen",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Rind"
+      ],
+      "notes": "1. Kartoffeln in Spalten schneiden und in Salzwasser 15 Minuten garen. Bohnen die letzten 7 Minuten mitkochen.\n2. Filet trocken tupfen, salzen und in Olivenöl je Seite 3 Minuten scharf anbraten, 5 Minuten in Alufolie ruhen lassen.\n3. Pilze, Knoblauch und Thymian im Bratfett 5 Minuten braten.\n4. Filet in Scheiben schneiden, mit Pilzen, Bohnen und Kartoffeln anrichten, pfeffern.\nPro Portion ca. 450 kcal · 40 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderfilet",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Kartoffeln",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Champignons",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Grüne Bohnen",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Thymian",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Olivenöl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-21",
+      "name": "Rindfleisch asiatisch mit Paprika und Zuckerschoten",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Rind"
+      ],
+      "notes": "1. Reis kochen.\n2. Steak in dünne Streifen schneiden und mit 1 EL Sojasoße und der Speisestärke mischen.\n3. Fleisch in Öl sehr heiß 2 Minuten braten, herausnehmen.\n4. Knoblauch, Ingwer, Paprika und Zuckerschoten 3 Minuten braten.\n5. Fleisch, restliche Sojasoße, Hoisinsoße und 3 EL Wasser dazu, kurz aufkochen, mit Frühlingszwiebeln und Reis servieren.\nPro Portion ca. 560 kcal · 40 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderhüftsteak",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Paprika",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Zuckerschoten",
+          "amount": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Frühlingszwiebeln",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 3,
+          "unit": "EL"
+        },
+        {
+          "name": "Hoisinsoße",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Speisestärke",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    },
+    {
+      "id": "r2-22",
+      "name": "Chili Blanco mit Rinderhack",
+      "minutes": 30,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Rind"
+      ],
+      "notes": "1. Hack in Öl krümelig braten, Zwiebel und Knoblauch 3 Minuten mitbraten, Kreuzkümmel kurz mitrösten.\n2. Abgespülte Bohnen, Mais und Gemüsebrühe dazugeben, 15 Minuten köcheln.\n3. Ein Drittel der Bohnen am Topfrand zerdrücken, damit es sämig wird, Frischkäse einrühren.\n4. Mit Limettensaft, Salz und Pfeffer abschmecken, Petersilie darüber.\nPro Portion ca. 600 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderhackfleisch",
+          "amount": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Weiße Bohnen",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Mais",
+          "amount": 1,
+          "unit": "Dose"
+        },
+        {
+          "name": "Zwiebel",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Kreuzkümmel",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Gemüsebrühe",
+          "amount": 400,
+          "unit": "ml"
+        },
+        {
+          "name": "Frischkäse light",
+          "amount": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Limette",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Petersilie",
+          "amount": 1,
+          "unit": "Bund"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        },
+        {
+          "name": "Salz",
+          "amount": null,
+          "unit": ""
+        },
+        {
+          "name": "Pfeffer",
+          "amount": null,
+          "unit": ""
+        }
+      ]
+    },
+    {
+      "id": "r2-23",
+      "name": "Rind-Brokkoli-Pfanne mit Honig-Knoblauch",
+      "minutes": 25,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "Rind"
+      ],
+      "notes": "1. Reis kochen.\n2. Sojasoße, Honig, Speisestärke und 4 EL Wasser verrühren.\n3. Steak in dünne Streifen schneiden und in Öl sehr heiß 2 Minuten braten, herausnehmen.\n4. Brokkoli in Röschen mit Knoblauch und Ingwer 4 Minuten braten, 2 EL Wasser dazu.\n5. Fleisch und Soße dazugeben, kurz aufkochen, bis sie glänzt, mit Sesam und Reis servieren.\nPro Portion ca. 540 kcal · 42 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderhüftsteak",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Brokkoli",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 2,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 3,
+          "unit": "EL"
+        },
+        {
+          "name": "Honig",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Speisestärke",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Sesam",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    },
+    {
+      "id": "r2-24",
+      "name": "Koreanische Hack-Bowl mit Ei",
+      "minutes": 20,
+      "servings": 2,
+      "tags": [
+        "eiweißreich",
+        "schnell",
+        "Rind",
+        "Bowl"
+      ],
+      "notes": "1. Reis kochen.\n2. Hack in Öl krümelig und kräftig braun braten, Knoblauch und Ingwer 1 Minute mitbraten.\n3. Sojasoße, Honig und Chiliflocken dazugeben und einkochen, bis das Hack glänzt.\n4. Eier als Spiegeleier braten, Gurke und Möhre in feine Streifen schneiden.\n5. Reis, Hack, Gemüse und Ei anrichten, mit Frühlingszwiebeln und Sesam bestreuen.\nPro Portion ca. 650 kcal · 45 g Eiweiß",
+      "ingredients": [
+        {
+          "name": "Rinderhackfleisch",
+          "amount": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Reis",
+          "amount": 120,
+          "unit": "g"
+        },
+        {
+          "name": "Eier",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Gurke",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Möhre",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Frühlingszwiebeln",
+          "amount": 2,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sojasoße",
+          "amount": 3,
+          "unit": "EL"
+        },
+        {
+          "name": "Honig",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Knoblauch",
+          "amount": 1,
+          "unit": "Zehe"
+        },
+        {
+          "name": "Ingwer",
+          "amount": 1,
+          "unit": "Stück"
+        },
+        {
+          "name": "Sesam",
+          "amount": 1,
+          "unit": "TL"
+        },
+        {
+          "name": "Chiliflocken",
+          "amount": 1,
+          "unit": "Prise"
+        },
+        {
+          "name": "Öl",
+          "amount": 1,
+          "unit": "EL"
+        }
+      ]
+    }
+  ]
+}

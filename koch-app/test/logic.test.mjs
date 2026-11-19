@@ -111,6 +111,9 @@ test('Zutaten landen im passenden Supermarkt-Bereich', async () => {
   assert.equal(categoryOf('Eier'), 'kuehl');
   assert.equal(categoryOf('Klopapier'), 'haushalt');
   assert.equal(categoryOf('Batterien'), 'sonst');
+  assert.equal(categoryOf('Zuckerschoten'), 'obst'); // nicht „Zucker“
+  assert.equal(categoryOf('Grüne Bohnen'), 'obst'); // frisch, nicht Dose
+  assert.equal(categoryOf('Räuchertofu'), 'kuehl');
   assert.equal(categoryOf('Kokosmilch', { kokosmilch: 'kuehl' }), 'kuehl'); // eigene Zuordnung geht vor
   const groups = groupByCategory([{ n: 'Reis' }, { n: 'Zwiebel' }, { n: 'Lachs' }], x => x.n);
   assert.deepEqual(groups.map(g => g.id), ['obst', 'fleisch', 'trocken']);
