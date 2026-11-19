@@ -133,3 +133,13 @@ test('Markt-Tag aus „Gibt\'s hier nicht“', async () => {
   assert.equal(storeTag([rewe], 'lachs'), ''); // ein Markt allein: kein Tag
   assert.equal(storeTag([rewe, { name: 'Lidl', missing: { lachs: true } }], 'lachs'), 'in keinem Markt');
 });
+
+test('Schnell anpassen: Mengen in sinnvollen Schritten', async () => {
+  const { stepAmount } = await import('../js/logic.js');
+  assert.equal(stepAmount(1, 'Zehe', 1), 2);
+  assert.equal(stepAmount(1, 'Zehe', -1), 1); // nicht unter einen Schritt
+  assert.equal(stepAmount(150, 'g', 1), 200);
+  assert.equal(stepAmount(100, 'g', -1), 90);
+  assert.equal(stepAmount(30, 'g', -1), 20);
+  assert.equal(stepAmount(1, 'EL', 1), 1.5);
+});

@@ -283,7 +283,9 @@ h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacin
 /* Vollbild-Fenster (Basics): ganze Höhe, Knöpfe bleiben unten sichtbar */
 .sheet-wrap.full { align-items: stretch; }
 .sheet-wrap.full .sheet { height: 100dvh; max-height: 100dvh; border-radius: 0; padding-top: env(safe-area-inset-top); }
-.sheet-wrap.full .sheet-body { flex: 1; display: flex; flex-direction: column; }
+.sheet-wrap.full .sheet-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+/* Inhalte nicht zusammenquetschen, sondern scrollen lassen */
+.sheet-wrap.full .sheet-body > * { flex-shrink: 0; }
 .sheet-actions { position: sticky; bottom: 0; background: var(--surface); padding: 12px 0 4px; margin-top: auto;
   border-top: 1px solid var(--line); }
 .sheet-wrap.full .chip { padding: 10px 14px; font-size: 16px; }
@@ -415,3 +417,16 @@ textarea.paste:focus { border-color: var(--accent); outline: none; }
   font-style: normal; font-size: 12px; font-weight: 650; vertical-align: 2px;
   background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
 .store-tag .ms { font-size: 13px; }
+
+/* Wie war's? / Schnell anpassen */
+.adj-list { display: grid; }
+.adj-row { display: flex; align-items: center; gap: 4px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+.adj-row:last-child { border-bottom: none; }
+.adj-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adj-amount { min-width: 64px; text-align: center; font-size: 14px; }
+.next-note { font-size: 16px; }
+.next-time { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; margin: 4px 0 8px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+.next-time > .ms { color: var(--accent); }
+.next-time span { display: grid; gap: 2px; white-space: pre-wrap; }
+.next-time b { color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }

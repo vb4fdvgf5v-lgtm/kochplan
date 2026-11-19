@@ -1,7 +1,7 @@
-import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
+import { UNITS, keyOf, parseAmount, fmtAmount, shoppingList, amountText, matchDishes, sharedWith, knownIngredients, sameIngredient, storeTag, stepAmount, mergeDishes, RECIPE_FILE_KIND, CATEGORIES, categoryOf, groupByCategory, boughtAmounts, stillNeeded,
   ingredientCounts, iso, fromIso, addDays, mondayOf, weekDays, isoWeek, lastCooked, daysBetween } from './logic.js';
 import { SAMPLE_DISHES, DEFAULT_STAPLES, DEFAULT_BASICS, demoWeeks } from './seed.js';
-import { parseRecipeText, SAMPLE_RECIPE_TEXT } from './import.js';
+import { parseRecipeText, parseIngredientLine, SAMPLE_RECIPE_TEXT } from './import.js';
 
 const $app = document.getElementById('app');
 const params = new URLSearchParams(location.search);
@@ -10,7 +10,7 @@ const DEMO = params.has('demo');
 // Präfix "koch:", weil die Putzplan-App unter derselben Adresse liegt und denselben Speicher sieht.
 const KEY = DEMO ? 'koch:demo' : 'koch:data';
 // Bei jeder Veröffentlichung hochzählen.
-const APP_VERSION = '0.12';
+const APP_VERSION = '0.13';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const NAV = [['week', 'calendar_month', 'Woche'], ['shop', 'shopping_cart', 'Einkauf'],
   ['dishes', 'menu_book', 'Gerichte'], ['find', 'kitchen', 'Resteküche']];
@@ -472,7 +472,7 @@ function viewFind() {
 function viewSheet() {
   const s = ui.sheet;
   const content = { entry: sheetEntry, pick: sheetPick, dish: sheetDish, edit: sheetEdit, paste: sheetPaste, pantry: sheetPantry, rate: sheetRate, cats: sheetCats, stores: sheetStores, basics: sheetBasics }[s.type]();
-  return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''} ${s.type === 'basics' ? 'full' : ''}" data-action="backdrop">
+  return `<div class="sheet-wrap ${s.fresh ? 'enter' : ''} ${['edit', 'paste'].includes(s.type) ? 'top' : ''} ${['basics', 'rate'].includes(s.type) ? 'full' : ''}" data-action="backdrop">
     <section class="sheet" role="dialog" aria-modal="true" aria-label="${esc(content.title)}">
       <header><h2>${esc(content.title)}</h2>
         <button class="icon-btn" data-action="close" aria-label="Schließen">${icon('close')}</button></header>
@@ -498,6 +498,7 @@ function sheetEntry() {
   return {
     title: dish.name,
     body: `${dish.minutes ? `<p class="muted">${icon('schedule')} ${dish.minutes} Minuten</p>` : ''}
+      ${nextTimeNote(dish)}
       ${cookedBlock(entry.cooked)}
       <h4>Tag (optional)</h4>
       <div class="chips">
@@ -574,6 +575,7 @@ function sheetDish() {
     title: dish.name,
     body: `<p class="meta muted">${meta.filter(Boolean).join('<span class="sep"></span>')}</p>
       ${dish.tags?.length ? `<p class="tags">${dish.tags.map(x => `<i>${esc(x)}</i>`).join('')}</p>` : ''}
+      ${nextTimeNote(dish)}
       ${cookedBlock(dish.cooked?.includes(today()) ? today() : null)}
       <h4>Bewertung</h4>
       ${ratingRows(dish)}
@@ -586,6 +588,7 @@ function sheetDish() {
         return `<button class="chip ${on ? 'on' : ''}" data-action="plan-dish" data-week="${w}" aria-pressed="${on}">${icon(on ? 'check' : 'add')}${label}</button>`;
       }).join('')}</div>
       <div class="btn-row">
+        <button class="btn" data-action="adjust-dish">${icon('tune')}Schnell anpassen</button>
         <button class="btn" data-action="edit-dish">${icon('edit')}Bearbeiten</button>
         <button class="btn ghost danger" data-action="delete-dish">${icon('delete')}Löschen</button>
       </div>`,
@@ -677,18 +680,44 @@ function sheetBasics() {
   };
 }
 
+// „Wie war's?“ nach jedem Kochen, auch beim Gericht über „Schnell anpassen“: Sterne, Zutaten mit − / + / ×, Notiz.
+// Alles wird sofort gespeichert, „Fertig“ schließt nur.
 function sheetRate() {
   const dish = dishById(ui.sheet.id);
+  const first = (dish.cooked ?? []).length <= 1 && !isRated(dish);
+  const intro = ui.sheet.adjust ? 'Was soll beim nächsten Mal anders sein? Änderungen gelten sofort fürs Rezept.'
+    : first ? `Du hast <b>${esc(dish.name)}</b> zum ersten Mal gekocht. Wie war's?`
+    : `Wie war <b>${esc(dish.name)}</b> heute? Wenn du etwas ändern willst, geht das gleich hier.`;
+  const rows = dish.ingredients.map((i, n) => `<div class="adj-row">
+    <span class="adj-name">${esc(i.name)}</span>
+    ${i.amount != null ? `<button class="icon-btn" data-action="adj-step" data-i="${n}" data-dir="-1" aria-label="${esc(i.name)} weniger">${icon('remove')}</button>
+      <b class="num adj-amount">${esc(fmtAmount(i.amount, i.unit))}</b>
+      <button class="icon-btn" data-action="adj-step" data-i="${n}" data-dir="1" aria-label="${esc(i.name)} mehr">${icon('add')}</button>`
+      : '<span class="adj-amount muted small">ohne Menge</span>'}
+    <button class="icon-btn" data-action="adj-remove" data-i="${n}" aria-label="${esc(i.name)} entfernen">${icon('close')}</button>
+  </div>`).join('');
   return {
-    title: 'Wie war’s?',
-    body: `<p class="muted">Du hast <b>${esc(dish.name)}</b> zum ersten Mal gekocht. Wie hat es geschmeckt, und wie einfach ging es?</p>
+    title: ui.sheet.adjust ? 'Schnell anpassen' : 'Wie war’s?',
+    body: `<p class="muted">${intro}</p>
       ${ratingRows(dish)}
-      <div class="btn-row">
-        <button class="btn primary" data-action="close" ${isRated(dish) ? '' : 'disabled'}>${icon('check')}Fertig</button>
-        <button class="btn ghost" data-action="close">Später</button>
+      <h4>Zutaten</h4>
+      <div class="adj-list">${rows}</div>
+      <form class="inline-form" data-form="adj-add">
+        <input id="adj-input" name="ing" list="ing-list" placeholder="Zutat dazu, z. B. 100 g Feta" autocomplete="off" enterkeyhint="done">
+        <button class="icon-btn filled" aria-label="Zutat hinzufügen">${icon('add')}</button>
+      </form>
+      <h4>Fürs nächste Mal</h4>
+      <textarea class="paste next-note" data-note="${dish.id}" rows="3" placeholder="z. B. mehr Knoblauch, 5 Min. länger braten">${esc(dish.nextTime ?? '')}</textarea>
+      <div class="btn-row sheet-actions">
+        <button class="btn primary" data-action="close">${icon('check')}Fertig</button>
+        ${ui.sheet.adjust ? '' : '<button class="btn ghost" data-action="close">Überspringen</button>'}
       </div>`,
   };
 }
+
+// Notiz „Fürs nächste Mal“ oben im Gericht, damit man sie vor dem Kochen sieht
+const nextTimeNote = dish => dish.nextTime?.trim()
+  ? `<div class="next-time">${icon('lightbulb')}<span><b>Fürs nächste Mal</b>${esc(dish.nextTime.trim())}</span></div>` : '';
 
 // Großer Knopf „Gerade gekocht“, danach die Bestätigung mit Rückgängig
 function cookedBlock(cookedOn) {
@@ -892,10 +921,17 @@ const actions = {
     dish.cooked = [...(dish.cooked ?? []), t];
     if (entry) entry.cooked = t;
     toast('Als gekocht gespeichert');
-    // Noch nicht bewertet: gleich fragen, wie es war
-    if (!isRated(dish)) openSheet({ type: 'rate', id: dish.id });
+    // Gleich fragen, wie es war (bewerten, Zutaten anpassen, Notiz)
+    openSheet({ type: 'rate', id: dish.id });
     commit();
   },
+  'adjust-dish': () => { openSheet({ type: 'rate', id: ui.sheet.id, adjust: true }); render(); },
+  'adj-step': el => {
+    const i = dishById(ui.sheet.id).ingredients[Number(el.dataset.i)];
+    i.amount = stepAmount(i.amount, i.unit, Number(el.dataset.dir));
+    commit();
+  },
+  'adj-remove': el => { dishById(ui.sheet.id).ingredients.splice(Number(el.dataset.i), 1); commit(); },
   rate: el => {
     const dish = dishById(ui.sheet.id);
     dish.rating = { ...dish.rating, [el.dataset.kind]: Number(el.dataset.value) };
@@ -1091,6 +1127,19 @@ function addHave(text) {
 }
 
 const forms = {
+  'adj-add': form => {
+    const text = form.ing.value.trim();
+    if (!text) return;
+    const parsed = parseIngredientLine(text);
+    const ing = parsed?.name ? { name: parsed.name, amount: parsed.amount, unit: parsed.amount == null ? '' : parsed.unit }
+      : { name: text[0].toUpperCase() + text.slice(1), amount: null, unit: '' };
+    // Bekannte Schreibweise übernehmen, damit Einkaufsliste und Resteküche sie zusammenführen
+    const known = knownIngredients(data.dishes, data.staples).find(n => keyOf(n) === keyOf(ing.name));
+    if (known) ing.name = known;
+    dishById(ui.sheet.id).ingredients.push(ing);
+    ui.focus = 'adj-input';
+    commit();
+  },
   basic: form => {
     addBasic(form.basic.value);
     ui.focus = 'basic-input';
@@ -1135,6 +1184,7 @@ $app.addEventListener('submit', e => {
 // Eingaben: Suchfelder zeichnen neu, das Formular merkt sich nur den Entwurf (kein Neuzeichnen beim Tippen)
 function onInput(e) {
   const el = e.target;
+  if (el.dataset.note) { const d = dishById(el.dataset.note); if (d) { d.nextTime = el.value; save(); } return; }
   if (el.dataset.bind) { ui[el.dataset.bind] = el.value; render(); return; }
   if (el.dataset.ui) { ui[el.dataset.ui] = el.value; return; }
   const draft = ui.sheet?.draft;

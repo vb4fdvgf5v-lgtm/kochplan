@@ -238,3 +238,12 @@ export function storeTag(stores = [], key) {
   if (avail.length === stores.length) return '';
   return avail.length ? `nur ${avail.map(st => st.name).join(' / ')}` : 'in keinem Markt';
 }
+
+// Schnell anpassen: Menge in sinnvollen Schritten ändern (g/ml in 10ern, ab 100 in 50ern; EL/TL halbe; Stück, Dose … ganze)
+export function stepAmount(amount, unit, dir) {
+  const stepOf = a => (unit === 'g' || unit === 'ml') ? (a >= 100 ? 50 : 10)
+    : (unit === 'kg' || unit === 'l') ? 0.25 : (unit === 'EL' || unit === 'TL') ? 0.5 : 1;
+  const step = stepOf(dir < 0 ? amount - 1e-9 : amount);
+  const next = Math.round((amount + dir * step) * 100) / 100;
+  return next >= step - 1e-9 ? next : amount;
+}
